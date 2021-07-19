@@ -1,7 +1,10 @@
 package com.codewith.codewith;
 
+import com.codewith.codewith.dto.MemberDto;
 import com.codewith.codewith.model.*;
+import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.repository.StageIngRepository;
+import com.codewith.codewith.service.MemberService;
 import com.codewith.codewith.service.StageIngService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -109,20 +112,37 @@ public class CodewithApplication {
 //                };
 //            }
     //Stage_Ing Test
-            @Bean
-            public CommandLineRunner demo(StageIngRepository stage_IngRepository, StageIngService stage_IngService) {
-                return (args) -> {
-                    stage_IngRepository.save(new StageIng(1L, 2, 3));
+//            @Bean
+//            public CommandLineRunner demo(StageIngRepository stage_IngRepository, StageIngService stage_IngService) {
+//                return (args) -> {
+//                    stage_IngRepository.save(new StageIng(1L, 2, 3));
+//
+//                    System.out.println("데이터 인쇄");
+//                    List<StageIng> stage_IngList = stage_IngRepository.findAll();
+//                    for (int i=0; i< stage_IngList.size(); i++) {
+//                        StageIng stage_Ing = stage_IngList.get(i);
+//                        System.out.println(stage_Ing.getUser_id());
+//                        System.out.println(stage_Ing.getCourse());
+//                        System.out.println(stage_Ing.getStage());
+//                    }
+//
+//                };
+//            }
 
-                    System.out.println("데이터 인쇄");
-                    List<StageIng> stage_IngList = stage_IngRepository.findAll();
-                    for (int i=0; i< stage_IngList.size(); i++) {
-                        StageIng stage_Ing = stage_IngList.get(i);
-                        System.out.println(stage_Ing.getUser_id());
-                        System.out.println(stage_Ing.getCourse());
-                        System.out.println(stage_Ing.getStage());
-                    }
+    @Bean
+    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService) {
+        return (args) -> {
+            MemberDto memberDto = new MemberDto(1L,"1","1","1","1","1");
+            memberService.joinUser(memberDto);
 
-                };
+            List<Member> stage_IngList = memberRepository.findAll();
+            for (int i=0; i< stage_IngList.size(); i++) {
+                Member stage_Ing = stage_IngList.get(i);
+                System.out.println(stage_Ing.getUser_id());
+                System.out.println(stage_Ing.getEmail());
+                System.out.println(stage_Ing.getName());
             }
+
+        };
+    }
 }
