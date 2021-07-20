@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class JavascriptCode extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long index;
+    private Long id;
 
     @Column(nullable = false)
     private String code;

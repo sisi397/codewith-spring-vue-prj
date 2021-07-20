@@ -13,7 +13,7 @@ public class StageFinish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long index;
+    private Long id;
 
     @Column(nullable = false)
     private Long user_id;

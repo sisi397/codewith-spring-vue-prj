@@ -19,6 +19,6 @@ public class StageIngService {
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다.")
         );
         stageIng1.update(requestDto);
-        return stageIng1.getIndex();
+        return stageIng1.getId();
     }
 }

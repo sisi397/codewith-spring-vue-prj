@@ -20,6 +20,6 @@ public class ScrapService {
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다.")
         );
         scrap1.update(requestDto);
-        return scrap1.getIndex();
+        return scrap1.getId();
     }
 }

@@ -12,7 +12,7 @@ public class HtmlCode extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long index;
+    private Long id;
 
     @Column(nullable = false)
     private String code;

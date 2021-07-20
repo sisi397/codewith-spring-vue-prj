@@ -20,6 +20,6 @@ public class StageFinishService {
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다.")
         );
         stageFinish1.update(requestDto);
-        return stageFinish1.getIndex();
+        return stageFinish1.getId();
     }
 }
