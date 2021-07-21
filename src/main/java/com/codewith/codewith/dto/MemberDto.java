@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 public class MemberDto {
-    private Long user_id;
-    private String id;
+    private Long id;
+    private String userId;
     private String nickname;
     private String name;
     private String email;
@@ -21,7 +21,7 @@ public class MemberDto {
 
     public Member toEntity(){
         return Member.builder()
-                .user_id(user_id)
+                .userId(userId)
                 .id(id)
                 .name(name)
                 .nickname(nickname)
@@ -31,9 +31,9 @@ public class MemberDto {
     }
 
     @Builder
-    public MemberDto(Long user_id, String id, String nickname, String name, String email, String password) {
-        this.user_id = user_id;
+    public MemberDto(Long id, String userId, String nickname, String name, String email, String password) {
         this.id = id;
+        this.userId = userId;
         this.nickname = nickname;
         this.name = name;
         this.email = email;

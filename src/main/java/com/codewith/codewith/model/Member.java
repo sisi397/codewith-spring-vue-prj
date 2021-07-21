@@ -14,10 +14,10 @@ import javax.persistence.*;
 public class Member {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long user_id;
+    private Long id;
 
     @Column(length = 50, nullable = false)
-    private String id;
+    private String userId;
 
     @Column(length = 50, nullable = false)
     private String nickname;
@@ -32,9 +32,9 @@ public class Member {
     private String password;
 
     @Builder
-    public Member(Long user_id, String id, String nickname, String name, String email, String password) {
-        this.user_id = user_id;
+    public Member(Long id, String userId, String nickname, String name, String email, String password) {
         this.id = id;
+        this.userId = userId;
         this.nickname = nickname;
         this.name = name;
         this.email = email;

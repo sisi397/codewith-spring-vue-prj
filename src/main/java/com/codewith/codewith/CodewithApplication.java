@@ -132,13 +132,15 @@ public class CodewithApplication {
     @Bean
     public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService) {
         return (args) -> {
-            MemberDto memberDto = new MemberDto(1L,"1","1","1","1","1");
+            MemberDto memberDto = new MemberDto(1L,"id","nick","name","e","pass");
+            MemberDto memberDto2 = new MemberDto(2L,"id2","nick2","name2","e2","pass2");
             memberService.joinUser(memberDto);
+            memberService.joinUser(memberDto2);
 
             List<Member> stage_IngList = memberRepository.findAll();
             for (int i=0; i< stage_IngList.size(); i++) {
                 Member stage_Ing = stage_IngList.get(i);
-                System.out.println(stage_Ing.getUser_id());
+                System.out.println(stage_Ing.getUserId());
                 System.out.println(stage_Ing.getEmail());
                 System.out.println(stage_Ing.getName());
             }

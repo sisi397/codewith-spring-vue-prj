@@ -2,29 +2,37 @@ package com.codewith.codewith.controller;
 
 import com.codewith.codewith.dto.MemberDto;
 import com.codewith.codewith.model.Member;
-import com.codewith.codewith.model.Scrap;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.service.MemberService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
-
 
 @RestController
 @AllArgsConstructor
 public class MemberController {
     private MemberService memberService;
     private MemberRepository memberRepository;
+
+    //로그인한 멤버 정보받기
+    @GetMapping("/memberInfo")
+    public Member getMemberInfo(Principal principal) {
+        Member member =memberRepository.findByUserId(principal.getName()).orElseThrow(
+                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+        return member;
+    }
+
     @GetMapping("/api/member")
     public List<Member> getMember() {
         return memberRepository.findAll();
     }
+
     // 메인 페이지
 //    @GetMapping("/")
 //    public String index() {
@@ -41,7 +49,7 @@ public class MemberController {
     public Member createSignup(@RequestBody MemberDto memberDto) {
         return memberService.joinUser(memberDto);
 
-         //"redirect:/Signup";
+        //"redirect:/Signup";
     }
 
 //    // 로그인 페이지
