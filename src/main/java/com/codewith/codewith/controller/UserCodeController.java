@@ -7,6 +7,7 @@ import com.codewith.codewith.service.UserCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,12 +15,14 @@ import java.util.List;
 public class UserCodeController {
 
     private final UserCodeRepository userCodeRepository;
+    private final UserCodeService userCodeService;
 
     @GetMapping("/api/userCode")
-    public List<UserCode> getUserCode() {
-        return userCodeRepository.findAll();
+    public List<UserCode> getUserCode(Principal principal) {
+        String userId = principal.getName();
+        return userCodeRepository.findAllByUserId(userId).orElseThrow(
+                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
     }
-    private final UserCodeService userCodeService;
 
     //POST (INSERT)
     @PostMapping("/api/userCode")

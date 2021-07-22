@@ -21,7 +21,7 @@ public class ScrapController {
     public List<Scrap> getScrap(Principal principal) {
         String userId = principal.getName();
         return scrapRepository.findAllByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
+                () -> new IllegalArgumentException("페이지가 존재하지 않습니다."));
     }
 
 

@@ -6,6 +6,7 @@ import com.codewith.codewith.service.StageFinishService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -13,12 +14,14 @@ import java.util.List;
 public class StageFinishController {
 
     private final StageFinishRepository stageFinishRepository;
+    private final StageFinishService stageFinishService;
 
     @GetMapping("/api/stageFinish")
-    public List<StageFinish> getStageFinish() {
-        return stageFinishRepository.findAll();
+    public List<StageFinish> getStageFinish(Principal principal) {
+        String userId = principal.getName();
+        return stageFinishRepository.findAllByUserId(userId).orElseThrow(
+                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
     }
-    private final StageFinishService stageFinishService;
 
     //POST (INSERT)
     @PostMapping("/api/stageFinish")

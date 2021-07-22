@@ -7,6 +7,7 @@ import com.codewith.codewith.service.StageIngService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,12 +15,15 @@ import java.util.List;
 public class StageIngController {
 
     private final StageIngRepository stageIngRepository;
+    private final StageIngService stageIngService;
 
     @GetMapping("/api/stageIng")
-    public List<StageIng> getStageIng() {
-        return stageIngRepository.findAll();
+    public List<StageIng> getStageIng(Principal principal) {
+        String userId = principal.getName();
+        return stageIngRepository.findAllByUserId(userId).orElseThrow(
+                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
     }
-    private final StageIngService stage_IngService;
+
 
     //POST (INSERT)
     @PostMapping("/api/stageIng")
@@ -31,7 +35,7 @@ public class StageIngController {
     //PUT (UPDATE)
     @PutMapping("/api/stageIng/{id}")
     public Long updateStageIng(@PathVariable Long id, @RequestBody StageIngRequestDto requestDto) {
-        return stage_IngService.update(id, requestDto);
+        return stageIngService.update(id, requestDto);
     }
 
     //DELETE

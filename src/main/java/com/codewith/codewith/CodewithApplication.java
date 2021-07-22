@@ -3,9 +3,7 @@ package com.codewith.codewith;
 import com.codewith.codewith.dto.MemberDto;
 import com.codewith.codewith.dto.ScrapRequestDto;
 import com.codewith.codewith.model.*;
-import com.codewith.codewith.repository.MemberRepository;
-import com.codewith.codewith.repository.ScrapRepository;
-import com.codewith.codewith.repository.StageIngRepository;
+import com.codewith.codewith.repository.*;
 import com.codewith.codewith.service.MemberService;
 import com.codewith.codewith.service.ScrapService;
 import com.codewith.codewith.service.StageIngService;
@@ -133,7 +131,7 @@ public class CodewithApplication {
 //            }
 
     @Bean
-    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, ScrapRepository scrapRepository) {
+    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, ScrapRepository scrapRepository, StageFinishRepository userCodeRepository) {
         return (args) -> {
             MemberDto memberDto = new MemberDto(1L,"id","nick","name","e","pass");
             MemberDto memberDto2 = new MemberDto(2L,"id2","nick2","name2","e2","pass2");
@@ -144,7 +142,13 @@ public class CodewithApplication {
             scrapRepository.save(scrap2);
             scrapRepository.save(scrap3);
 
+            StageFinish userCode1 = new StageFinish("id",1,1);
+            StageFinish userCode2 = new StageFinish("id2",2,1);
+            StageFinish userCode3 = new StageFinish("id2",3,1);
 
+            userCodeRepository.save(userCode1);
+            userCodeRepository.save(userCode2);
+            userCodeRepository.save(userCode3);
 
             memberService.joinUser(memberDto);
             memberService.joinUser(memberDto2);
