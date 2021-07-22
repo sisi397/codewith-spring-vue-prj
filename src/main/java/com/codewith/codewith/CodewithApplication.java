@@ -1,10 +1,13 @@
 package com.codewith.codewith;
 
 import com.codewith.codewith.dto.MemberDto;
+import com.codewith.codewith.dto.ScrapRequestDto;
 import com.codewith.codewith.model.*;
 import com.codewith.codewith.repository.MemberRepository;
+import com.codewith.codewith.repository.ScrapRepository;
 import com.codewith.codewith.repository.StageIngRepository;
 import com.codewith.codewith.service.MemberService;
+import com.codewith.codewith.service.ScrapService;
 import com.codewith.codewith.service.StageIngService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -130,10 +133,19 @@ public class CodewithApplication {
 //            }
 
     @Bean
-    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService) {
+    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, ScrapRepository scrapRepository) {
         return (args) -> {
             MemberDto memberDto = new MemberDto(1L,"id","nick","name","e","pass");
             MemberDto memberDto2 = new MemberDto(2L,"id2","nick2","name2","e2","pass2");
+            Scrap scrap1 = new Scrap("id",1,1);
+            Scrap scrap2 = new Scrap("id2",2,2);
+            Scrap scrap3 = new Scrap("id2",3,1);
+            scrapRepository.save(scrap1);
+            scrapRepository.save(scrap2);
+            scrapRepository.save(scrap3);
+
+
+
             memberService.joinUser(memberDto);
             memberService.joinUser(memberDto2);
 
