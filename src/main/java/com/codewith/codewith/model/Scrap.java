@@ -16,7 +16,7 @@ public class Scrap {
     private Long id;
 
     @Column(nullable = false)
-    private Long user_id;
+    private String userId;
 
     @Column(nullable = false)
     private int course;
@@ -24,20 +24,20 @@ public class Scrap {
     @Column(nullable = false)
     private int stage;
 
-    public Scrap(Long user_id, int course, int stage) {
-        this.user_id = user_id;
+    public Scrap(String userId, int course, int stage) {
+        this.userId = userId;
         this.course = course;
         this.stage = stage;
     }
 
     public Scrap(ScrapRequestDto requestDto) {
-        this.user_id = requestDto.getUser_id();
+        this.userId = requestDto.getUserId();
         this.course = requestDto.getCourse();
         this.stage = requestDto.getStage();
     }
 
     public void update(ScrapRequestDto requestDto) {
-        this.user_id = requestDto.getUser_id();
+        this.userId = requestDto.getUserId();
         this.course = requestDto.getCourse();
         this.stage = requestDto.getStage();
     }

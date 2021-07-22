@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class StageFinishRequestDto {
-    private Long user_id;
+    private String userId;
     private int course;
     private int stage;
 
-    public StageFinishRequestDto(Long user_id, int course, int stage) {
-        this.user_id = user_id;
+    public StageFinishRequestDto(String userId, int course, int stage) {
+        this.userId = userId;
         this.course = course;
         this.stage = stage;
     }

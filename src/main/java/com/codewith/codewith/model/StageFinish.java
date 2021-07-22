@@ -16,7 +16,7 @@ public class StageFinish {
     private Long id;
 
     @Column(nullable = false)
-    private Long user_id;
+    private String userId;
 
     @Column(nullable = false)
     private int course;
@@ -24,20 +24,20 @@ public class StageFinish {
     @Column(nullable = false)
     private int stage;
 
-    public StageFinish(Long user_id, int course, int stage) {
-        this.user_id = user_id;
+    public StageFinish(String userId, int course, int stage) {
+        this.userId = userId;
         this.course = course;
         this.stage = stage;
     }
 
     public StageFinish(StageFinishRequestDto requestDto) {
-        this.user_id = requestDto.getUser_id();
+        this.userId = requestDto.getUserId();
         this.course = requestDto.getCourse();
         this.stage = requestDto.getStage();
     }
 
     public void update(StageFinishRequestDto requestDto) {
-        this.user_id = requestDto.getUser_id();
+        this.userId = requestDto.getUserId();
         this.course = requestDto.getCourse();
         this.stage = requestDto.getStage();
     }

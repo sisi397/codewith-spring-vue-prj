@@ -16,7 +16,7 @@ public class StageIng {
     private Long id;
 
     @Column(nullable = false)
-    private Long user_id;
+    private String userId;
 
     @Column(nullable = false)
     private int course;
@@ -24,20 +24,20 @@ public class StageIng {
     @Column(nullable = false)
     private int stage;
 
-    public StageIng(Long user_id, int course, int stage) {
-        this.user_id = user_id;
+    public StageIng(String userId, int course, int stage) {
+        this.userId = userId;
         this.course = course;
         this.stage = stage;
     }
 
     public StageIng(StageIngRequestDto requestDto) {
-        this.user_id = requestDto.getUser_id();
+        this.userId = requestDto.getUserId();
         this.course = requestDto.getCourse();
         this.stage = requestDto.getStage();
     }
 
     public void update(StageIngRequestDto requestDto) {
-        this.user_id = requestDto.getUser_id();
+        this.userId = requestDto.getUserId();
         this.course = requestDto.getCourse();
         this.stage = requestDto.getStage();
     }
