@@ -26,6 +26,14 @@ public class MemberService implements UserDetailsService {
 
     @Transactional
     public Member joinUser(MemberDto memberDto) {
+
+        String userId = memberDto.getUserId();
+
+        Optional<Member> found = memberRepository.findByUserId(userId);
+        if (found.isPresent()) {
+            throw new IllegalArgumentException("중복된 사용자 ID 가 존재합니다.");
+        }
+
         // 비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         memberDto.setPassword(passwordEncoder.encode(memberDto.getPassword()));
