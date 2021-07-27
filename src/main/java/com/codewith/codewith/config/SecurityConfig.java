@@ -12,7 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -34,21 +36,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .csrf().disable()
                 .authorizeRequests()
                 // 페이지 권한 설정
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/admin/**").hasRole("ADMIN") // 이 페이지는 ADMIN만 접근 가능.
                 .antMatchers("/user/myinfo").hasRole("MEMBER")
-                .antMatchers("/**").permitAll()
+                .antMatchers("localhost:8090").permitAll()
+                .antMatchers("/**").permitAll() //나머지는 전부 접근 가능
             .and() // 로그인 설정
                 .formLogin()
-//                .loginPage("/user/login")
-//                .defaultSuccessUrl("/user/login/result")
+                //.loginPage("http://localhost:8080/login") //로그인 페이지
+                .usernameParameter("userId")
+                .passwordParameter("password")
+                //.loginProcessingUrl("/api/login") // 스프링 시큐리티가 해당 주소로 요청오는 로그인을 가로채서 대신 로그인 해준다.
+                .defaultSuccessUrl("/loginPage") // 로그인 성공 시 이동할 페이지
+                .failureUrl("/loginfail")
                 .permitAll()
             .and() // 로그아웃 설정
                 .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-                .logoutSuccessUrl("/user/logout/result")
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
+//                .logoutSuccessUrl("/user/logout/result")
                 .invalidateHttpSession(true)
             .and()
                 // 403 예외처리 핸들링

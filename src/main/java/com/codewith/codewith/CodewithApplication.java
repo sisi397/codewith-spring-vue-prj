@@ -129,6 +129,40 @@ public class CodewithApplication {
 //
 //                };
 //            }
+//
+//    @Bean
+//    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, ScrapRepository scrapRepository, StageFinishRepository userCodeRepository) {
+//        return (args) -> {
+//            MemberDto memberDto = new MemberDto(1L,"id","nick","name","e","pass");
+//            MemberDto memberDto2 = new MemberDto(2L,"id2","nick2","name2","e2","pass2");
+//            Scrap scrap1 = new Scrap("id",1,1);
+//            Scrap scrap2 = new Scrap("id2",2,2);
+//            Scrap scrap3 = new Scrap("id2",3,1);
+//            scrapRepository.save(scrap1);
+//            scrapRepository.save(scrap2);
+//            scrapRepository.save(scrap3);
+//
+//            StageFinish userCode1 = new StageFinish("id",1,1);
+//            StageFinish userCode2 = new StageFinish("id2",2,1);
+//            StageFinish userCode3 = new StageFinish("id2",3,1);
+//
+//            userCodeRepository.save(userCode1);
+//            userCodeRepository.save(userCode2);
+//            userCodeRepository.save(userCode3);
+//
+//            memberService.joinUser(memberDto);
+//            memberService.joinUser(memberDto2);
+//
+//            List<Member> stage_IngList = memberRepository.findAll();
+//            for (int i=0; i< stage_IngList.size(); i++) {
+//                Member stage_Ing = stage_IngList.get(i);
+//                System.out.println(stage_Ing.getUserId());
+//                System.out.println(stage_Ing.getEmail());
+//                System.out.println(stage_Ing.getName());
+//            }
+//
+//        };
+//    }
 
     @Bean
     public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, ScrapRepository scrapRepository, StageFinishRepository userCodeRepository) {

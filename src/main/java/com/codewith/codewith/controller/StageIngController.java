@@ -18,11 +18,15 @@ public class StageIngController {
     private final StageIngService stageIngService;
 
     @GetMapping("/api/stageIng")
-    public List<StageIng> getStageIng(Principal principal) {
-        String userId = principal.getName();
-        return stageIngRepository.findAllByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
+    public List<StageIng> getStageIng() {
+        return stageIngRepository.findAll();
     }
+//    @GetMapping("/api/stageIng")
+//    public List<StageIng> getStageIng(Principal principal) {
+//        String userId = principal.getName();
+//        return stageIngRepository.findAllByUserId(userId).orElseThrow(
+//                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
+//    }
 
 
     //POST (INSERT)
