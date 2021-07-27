@@ -14,10 +14,15 @@ import java.io.Serializable;
 @Setter
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-@ToString
 public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String userId;
     private String name;
+
+    @Override
+    public String toString(){
+        return "{\nuserId:"+this.userId+"\nname:"+this.name+"\n}";
+    }
+
 }
