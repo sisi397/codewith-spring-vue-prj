@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 import java.security.Principal;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "*")
 @RestController
 @AllArgsConstructor
 public class MemberController {

@@ -6,6 +6,7 @@ import com.codewith.codewith.repository.JavascriptCodeReopository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 public class JavascriptController {

@@ -7,6 +7,7 @@ import com.codewith.codewith.service.HtmlCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 public class HtmlController {

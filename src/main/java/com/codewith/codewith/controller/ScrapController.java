@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import java.security.Principal;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 public class ScrapController {

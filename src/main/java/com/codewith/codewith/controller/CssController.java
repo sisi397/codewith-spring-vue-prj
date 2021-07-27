@@ -7,6 +7,7 @@ import com.codewith.codewith.service.CssCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 public class CssController {
