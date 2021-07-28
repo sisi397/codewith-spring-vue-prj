@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class MemberDto {
     private Long id;
     private String userId;
-    private String nickname;
     private String name;
     private String email;
     private String password;
@@ -24,17 +23,15 @@ public class MemberDto {
                 .userId(userId)
                 .id(id)
                 .name(name)
-                .nickname(nickname)
                 .email(email)
                 .password(password)
                 .build();
     }
 
     @Builder
-    public MemberDto(Long id, String userId, String nickname, String name, String email, String password) {
+    public MemberDto(Long id, String userId, String name, String email, String password) {
         this.id = id;
         this.userId = userId;
-        this.nickname = nickname;
         this.name = name;
         this.email = email;
         this.password = password;
