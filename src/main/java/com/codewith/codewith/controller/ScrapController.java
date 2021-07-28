@@ -34,6 +34,10 @@ public class ScrapController {
     @PostMapping("/api/scrap")
     public Scrap createScrap(@RequestBody ScrapRequestDto requestDto) {
         Scrap scrap = new Scrap(requestDto);
+
+        boolean present = scrapRepository.findByUserIdAndCourseAndStage(requestDto.getUserId(), requestDto.getCourse(), requestDto.getStage()).isPresent();
+        if(present) return null;
+
         return scrapRepository.save(scrap);
     }
 

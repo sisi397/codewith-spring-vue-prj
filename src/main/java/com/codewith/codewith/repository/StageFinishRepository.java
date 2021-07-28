@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface StageFinishRepository  extends JpaRepository<StageFinish, Long> {
     Optional<List<StageFinish>> findAllByUserId(String userId);
+    Optional<StageFinish> findByUserIdAndCourseAndStage(String userId, int course, int stage);
 }

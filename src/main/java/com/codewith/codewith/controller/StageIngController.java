@@ -34,6 +34,10 @@ public class StageIngController {
     @PostMapping("/api/stageIng")
     public StageIng createStageIng(@RequestBody StageIngRequestDto requestDto) {
         StageIng stageIng = new StageIng(requestDto);
+
+        boolean present = stageIngRepository.findByUserIdAndCourseAndStage(requestDto.getUserId(), requestDto.getCourse(), requestDto.getStage()).isPresent();
+        if(present) return null;
+
         return stageIngRepository.save(stageIng);
     }
 

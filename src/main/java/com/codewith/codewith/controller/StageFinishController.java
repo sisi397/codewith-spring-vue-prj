@@ -32,6 +32,10 @@ public class StageFinishController {
     @PostMapping("/api/stageFinish")
     public StageFinish createStageFinish(@RequestBody StageFinishRequestDto requestDto) {
         StageFinish stageFinish = new StageFinish(requestDto);
+
+        boolean present = stageFinishRepository.findByUserIdAndCourseAndStage(requestDto.getUserId(), requestDto.getCourse(), requestDto.getStage()).isPresent();
+        if(present) return null;
+
         return stageFinishRepository.save(stageFinish);
     }
 
