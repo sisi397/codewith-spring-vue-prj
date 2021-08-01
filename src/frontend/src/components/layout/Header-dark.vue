@@ -1,5 +1,5 @@
 <template>
-    <div id="header">        
+    <div id="header">
         <div id="logo">
             <a href=""><img id="logo-letter" src="../../assets/logo-letter.png" alt=""></a>
             <img id="logo-img" src="../../assets/main-page-logo.svg" alt="">
@@ -9,23 +9,34 @@
             <img class="nav-menu-division" src="../../assets/nav-menu-division.svg" alt="">
             <button class="menu" @click="openLoginPopup">Login</button>
             <img class="nav-menu-division" src="../../assets/nav-menu-division.svg" alt="">
-            <router-link class="menu" to="/Mypage">My page</router-link>
+            <!-- 로그인이 안된 상태에서 마이페이지 클릭할 경우 로그인 팝업 띄움 -->
+            <button class="menu" @click="openLoginPopup" v-if="loginState == 0">My page</button> 
+            <!-- 로그인이 된 경우 마이페이지로 이동 -->
+            <router-link class="menu" to="/Mypage" v-if="loginState == 1">My page</router-link>
         </div>
+        <button class="nav-hamburger-menu" @click="openNavMenuPopup" type="button"><img src="../../assets/btn_hamburger.svg" alt=""></button>
+        <NavMenuPopup
+            v-if="navMenuPopupState == 1"
+            >
+        </NavMenuPopup>     
     </div>
 
 </template>
 
 <script>
+import navMenuPopup from "./nav-menu-popup.vue"
 
 export default {
     name: "header-dark",
     props : ['_loginPopupState'],
     components : {
-
+        navMenuPopup
     },
     data() {
         return {
-            loginPopupState : this._loginPopupState //0은 닫힌 상태, 1은 열린 상태
+            loginPopupState : this._loginPopupState, //0은 닫힌 상태, 1은 열린 상태
+            navMenuPopupState : 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
+            loginState : 0 //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
         }
     },
     methods : {
@@ -33,6 +44,15 @@ export default {
             console.log("로그인 창 띄움");
             this.loginPopupState = 1;
             this.$emit('_loginOpen');
+        },
+        openNavMenuPopup() {
+            if (this.navMenuPopupState == 0) {
+                console.log("nav-menu 창 띄움");
+                this.navMenuPopupState = 1;
+            } else {
+                console.log("nav-menu 창 끔");
+                this.navMenuPopupState = 0;
+            }
         }
     }
 }
@@ -80,7 +100,13 @@ export default {
         color: #FFFFFF;
         font-size: 18px;
     }
+    .nav-menu button {
+        font-weight: 500;
+    }
     .nav-menu .nav-menu-division {
         margin: 0px 14px;
+    }
+    .nav-hamburger-menu {
+        display: none;
     }
 </style>

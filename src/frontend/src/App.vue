@@ -29,8 +29,11 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+html {
+    width: 100%; height: 100%;
+}
 body {
-  /* min-width: 1040px; */
+    width: 100%; height: 100%;
     overflow: hidden;
     background-color: #F5F5F5;
 }
