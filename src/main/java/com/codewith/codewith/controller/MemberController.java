@@ -6,11 +6,14 @@ import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.service.MemberService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
 import java.security.Principal;
 import java.util.List;
 
@@ -64,6 +67,22 @@ public class MemberController {
     public boolean createLogin(@RequestBody MemberDto memberDto) {
         return memberService.login(memberDto);
     }
+
+
+    //아이디 찾기
+    // 성공 시 아이디 리턴, 실패시 null 리턴
+    @PostMapping("/api/idFind")
+    public String findId(@RequestBody MemberDto memberDto){
+        return memberService.idFind(memberDto);
+    }
+
+    //비밀번호 찾기
+    // 성공시 true 리턴, 실패시 false 리턴
+    @PutMapping("/api/passFind")
+    public boolean updatePass(@RequestBody MemberDto memberDto) throws MessagingException {
+        return memberService.passFind(memberDto);
+    }
+
 
 //    @GetMapping("/loginPage")
 //    public String dispLogin(){

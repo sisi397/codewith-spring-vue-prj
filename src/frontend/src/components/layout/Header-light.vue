@@ -1,5 +1,5 @@
 <template>
-    <div id="header-light">        
+    <div id="header-light">
         <div id="logo">
             <router-link to="/"><img id="logo-letter" src="../../assets/logo-letter-purple.svg" alt=""></router-link>
             <img id="logo-img" src="../../assets/sub-page-logo.svg" alt="">
@@ -65,23 +65,23 @@ export default {
         padding: 0px 30px;
         font-weight: 500;
     }
-    #logo {
+    #header-light #logo {
         display: flex;
         align-items: center;
     }
-    #logo-letter {
+    #header-light #logo-letter {
         width: 110px;
     }
-    #logo-img {
+    #header-light #logo-img {
         width: 100px;
         margin-left: 30px;
     }
 
-    .nav-menu .menu-light {
+    #header-light .nav-menu .menu-light {
         color: #4C1993;
         font-size: 18px;
     }
-    .nav-menu .nav-menu-division {
+    #header-light .nav-menu .nav-menu-division {
         margin: 0px 14px;
     }
 </style>

@@ -2,10 +2,14 @@ package com.codewith.codewith.service;
 
 import com.codewith.codewith.model.Role;
 import com.codewith.codewith.model.Member;
+import com.codewith.codewith.model.Scrap;
 import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.dto.MemberDto;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -18,10 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.activation.FileDataSource;
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.lang.String;
+import java.util.Random;
+
 @CrossOrigin(origins = "http://localhost:8080")
 @Service
 @AllArgsConstructor
@@ -31,6 +41,7 @@ public class MemberService implements UserDetailsService {
     @Resource
     private UserInfo userInfo;
 
+    //회원가입
     @Transactional
     public Member joinUser(MemberDto memberDto) {
 
@@ -48,18 +59,6 @@ public class MemberService implements UserDetailsService {
         return memberRepository.save(memberDto.toEntity());
     }
 
-//    public boolean login(String pass){
-//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-//        pass = passwordEncoder.encode(pass);
-//        System.out.println(pass);
-//        Optional<Member> userEntityWrapper = memberRepository.findByPassword(pass);
-//        System.out.println(userEntityWrapper);
-//        if(true){
-//            return true;
-//        }else{
-//            return false;
-//        }
-//    }
     @Override
     public UserDetails loadUserByUsername(@RequestBody String username) throws UsernameNotFoundException {
         System.out.println(username);
@@ -78,11 +77,12 @@ public class MemberService implements UserDetailsService {
 
     }
 
-    public boolean login(MemberDto member) throws UsernameNotFoundException{
+    //로그인
+    public boolean login(MemberDto member) throws UsernameNotFoundException {
         System.out.println("login시작");
 
         Optional<Member> userEntityWrapper = memberRepository.findByUserId(member.getUserId());
-        if(userEntityWrapper.isPresent()) {
+        if (userEntityWrapper.isPresent()) {
             Member userEntity = userEntityWrapper.get();
 
             if (userEntity != null) {
@@ -100,15 +100,81 @@ public class MemberService implements UserDetailsService {
         }
         return false;
     }
-//    @Override
-//    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-//        System.out.println("/login 이 호출 되면 자동 실행되어 username이 DB에 있는지 확인한다.");
-//        Optional<Member> userEntityWrapper = memberRepository.findByUserId(userId);
-//
-//			if(userEntityWrapper == null) {
-//				return null;
-//			}else {
-//				return new Member(userEntityWrapper.);
-//			}
-//    }
+
+    //비밀번호 랜덤 생성
+    public String passRand(){
+        long seed = System.currentTimeMillis();
+        Random random = new Random(seed);
+        int flag;
+        String pass = "";
+        for(int i = 0; i < 8; i++){
+            flag = random.nextInt(2)+1;
+            if(flag == 1){
+                pass += (char)(random.nextInt(26)+65);
+            }else{
+                pass += (char)(random.nextInt(26)+97);
+            }
+        }
+
+        return pass;
+    }
+
+
+    //아이디 찾기. 이메일이랑 이름 입력했을 때.
+     public String idFind(MemberDto memberDto){
+        System.out.println("아이디찾기 시작");
+         Optional<Member> userEntityWrapper = memberRepository.findByEmail(memberDto.getEmail());
+         if(userEntityWrapper.isPresent()){
+             Member userEntity = userEntityWrapper.get();
+             if(userEntity.getName().equals(memberDto.getName())){
+                 return userEntity.getUserId();
+             }
+         }
+         return null;
+     }
+
+    private final JavaMailSender javaMailSender;
+
+    //오류나서 from안쓰고 직접 이메일 적음.
+//    @Value("${spring.mail.username}")
+//    private String from;
+
+    //비밀번호 찾기. id랑 이메일을 입력했을 때.
+    public boolean passFind(MemberDto memberDto) throws MessagingException {
+        Optional<Member> userEntityWrapper = memberRepository.findByUserId(memberDto.getUserId());
+        String newPass="";
+        if(userEntityWrapper.isPresent()){
+            Member userEntity = userEntityWrapper.get();
+            if(userEntity.getEmail().equals(memberDto.getEmail())){
+                System.out.println("비밀번호 찾기 시작");
+                //아이디, 이메일 같으면 비밀번호 UPDATE
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                newPass = passRand();
+                userEntity.update(passwordEncoder.encode(newPass));
+                memberRepository.save(userEntity);
+
+                // 메일보내기
+                MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+                MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                mimeMessageHelper.setFrom("sieun0907@naver.com");
+                mimeMessageHelper.setTo(memberDto.getEmail());
+                mimeMessageHelper.setSubject("[Code-with] 임시 비밀번호 안내");
+
+                StringBuilder body = new StringBuilder(
+                        "<div style='text-align:center'><img src='cid:codewith' style='width:500px'></div>" +
+                                "<h2 style='text-align:center; color:blue;'>임시 비밀번호 생성안내</h2>" +
+                                "<h3 style='text-align:center;'>임시비밀번호는 <strong>" + newPass + "</strong> 입니다.</h3>" +
+                                "<h3 style='text-align:center;'> 로그인 후에는 새로운 비밀번호로 변경하셔야 합니다.</h3>" +
+                                "<h3 style='text-align:center;'>감사합니다.</h3>"
+                );
+                System.out.println(body);
+                mimeMessageHelper.setText(body.toString(), true);
+                mimeMessageHelper.addInline("codewith", new FileDataSource("C:/springStudy/backend/src/main/resources/static/img/send_email.jpg"));
+                javaMailSender.send(mimeMessage);
+                System.out.println("메일보내기 성공");
+                return true;
+            }
+        }
+        return false;
+    }
 }

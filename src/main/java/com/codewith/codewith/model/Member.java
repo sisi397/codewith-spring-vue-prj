@@ -1,6 +1,8 @@
 
 package com.codewith.codewith.model;
 
+import com.codewith.codewith.dto.MemberDto;
+import com.codewith.codewith.dto.StageIngRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +37,11 @@ public class Member {
         this.userId = userId;
         this.name = name;
         this.email = email;
+        this.password = password;
+    }
+
+    public void update(String password) {
+        System.out.println("비밀번호 update 시작");
         this.password = password;
     }
 }
