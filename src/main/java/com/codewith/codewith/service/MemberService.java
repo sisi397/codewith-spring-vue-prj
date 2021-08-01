@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.activation.FileDataSource;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -121,7 +122,8 @@ public class MemberService implements UserDetailsService {
 
     //아이디 찾기. 이메일이랑 이름 입력했을 때.
      public String idFind(MemberDto memberDto){
-         Optional<Member> userEntityWrapper = memberRepository.findByUserId(memberDto.getEmail());
+        System.out.println("아이디찾기 시작");
+         Optional<Member> userEntityWrapper = memberRepository.findByEmail(memberDto.getEmail());
          if(userEntityWrapper.isPresent()){
              Member userEntity = userEntityWrapper.get();
              if(userEntity.getName().equals(memberDto.getName())){
@@ -158,9 +160,16 @@ public class MemberService implements UserDetailsService {
                 mimeMessageHelper.setTo(memberDto.getEmail());
                 mimeMessageHelper.setSubject("[Code-with] 임시 비밀번호 안내");
 
-                StringBuilder body = new StringBuilder("임시비밀번호는 " + newPass + " 입니다.");
+                StringBuilder body = new StringBuilder(
+                        "<div style='text-align:center'><img src='cid:codewith' style='width:500px'></div>" +
+                                "<h2 style='text-align:center; color:blue;'>임시 비밀번호 생성안내</h2>" +
+                                "<h3 style='text-align:center;'>임시비밀번호는 <strong>" + newPass + "</strong> 입니다.</h3>" +
+                                "<h3 style='text-align:center;'> 로그인 후에는 새로운 비밀번호로 변경하셔야 합니다.</h3>" +
+                                "<h3 style='text-align:center;'>감사합니다.</h3>"
+                );
                 System.out.println(body);
                 mimeMessageHelper.setText(body.toString(), true);
+                mimeMessageHelper.addInline("codewith", new FileDataSource("C:/springStudy/backend/src/main/resources/static/img/send_email.jpg"));
                 javaMailSender.send(mimeMessage);
                 System.out.println("메일보내기 성공");
                 return true;

@@ -205,17 +205,17 @@ public class CodewithApplication {
             MemberDto memberDto = new MemberDto(1L,"id","name","tldms9700@gmail.com","pass");
 
             Member member = memberService.joinUser(memberDto);
-            System.out.println(member);
-            System.out.println(memberService.passRand());
-
-
-            String pass = memberService.passFind(memberDto);
-
-            System.out.println(pass);
-            System.out.println(memberService.login(memberDto));
-
-            memberDto.setPassword(pass);
-            System.out.println(memberService.login(memberDto));
+//            System.out.println(member);
+//            System.out.println(memberService.passRand());
+//
+//
+//            String pass = memberService.passFind(memberDto);
+//
+//            System.out.println(pass);
+//            System.out.println(memberService.login(memberDto));
+//
+//            memberDto.setPassword(pass);
+//            System.out.println(memberService.login(memberDto));
         };
     }
 }
