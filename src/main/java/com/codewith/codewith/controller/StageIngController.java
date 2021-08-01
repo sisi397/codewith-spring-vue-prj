@@ -6,8 +6,6 @@ import com.codewith.codewith.dto.StageIngRequestDto;
 import com.codewith.codewith.service.StageIngService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -35,8 +33,12 @@ public class StageIngController {
     public StageIng createStageIng(@RequestBody StageIngRequestDto requestDto) {
         StageIng stageIng = new StageIng(requestDto);
 
-        boolean present = stageIngRepository.findByUserIdAndCourseAndStage(requestDto.getUserId(), requestDto.getCourse(), requestDto.getStage()).isPresent();
-        if(present) return null;
+        StageIng found = stageIngRepository.findByUserIdAndCourse(requestDto.getUserId(), requestDto.getCourse()).orElseThrow(
+              () -> new IllegalArgumentException("존재하지 않습니다."));
+        if(found != null) {
+            stageIngService.update(found.getId(), requestDto);
+            return found;
+        }
 
         return stageIngRepository.save(stageIng);
     }

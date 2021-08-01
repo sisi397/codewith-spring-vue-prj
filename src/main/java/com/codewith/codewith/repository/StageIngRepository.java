@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface StageIngRepository extends JpaRepository<StageIng, Long> {
     Optional<List<StageIng>> findAllByUserId(String userId);
-    Optional<StageIng> findByUserIdAndCourseAndStage(String userId, int course, int stage);
+    Optional<StageIng> findByUserIdAndCourse(String userId, int course);
 }
 
 
