@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.List;
 
@@ -36,8 +38,19 @@ public class MemberController {
 //    }
 
     @GetMapping("/memberInfo")
-    public String get(){
-        return userInfo.toString();
+    public String get(HttpServletRequest request){
+        HttpSession session = request.getSession();
+        System.out.println(session.isNew());
+        System.out.println((String)(session.getAttribute("userId")));
+
+        if(!(session.isNew())){
+            String userId = (String)(session.getAttribute("userId"));
+            String name = (String)(session.getAttribute("name"));
+            String result = "{userId:" + userId + "name:"  + name + "}";
+            return result;
+        }else{
+            return null;
+        }
     }
 
     @GetMapping("/api/member")
@@ -64,8 +77,8 @@ public class MemberController {
     }
 
     @PostMapping("/api/login")
-    public boolean createLogin(@RequestBody MemberDto memberDto) {
-        return memberService.login(memberDto);
+    public boolean createLogin(@RequestBody MemberDto memberDto, HttpServletRequest request) {
+        return memberService.login(memberDto, request);
     }
 
 
@@ -83,6 +96,11 @@ public class MemberController {
         return memberService.passFind(memberDto);
     }
 
+    //로그아웃
+    @DeleteMapping("/api/logout")
+    public void deletelogin(HttpServletRequest request){
+        memberService.logout(request);
+    }
 
 //    @GetMapping("/loginPage")
 //    public String dispLogin(){

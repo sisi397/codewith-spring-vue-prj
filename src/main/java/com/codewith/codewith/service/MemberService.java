@@ -26,6 +26,8 @@ import javax.activation.FileDataSource;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +80,7 @@ public class MemberService implements UserDetailsService {
     }
 
     //로그인
-    public boolean login(MemberDto member) throws UsernameNotFoundException {
+    public boolean login(MemberDto member, HttpServletRequest request) throws UsernameNotFoundException {
         System.out.println("login시작");
 
         Optional<Member> userEntityWrapper = memberRepository.findByUserId(member.getUserId());
@@ -90,8 +92,13 @@ public class MemberService implements UserDetailsService {
 
                 if (pwdEncoder.matches(member.getPassword(), userEntity.getPassword())) {
                     System.out.println("good");
-                    userInfo.setUserId(userEntity.getUserId());
-                    userInfo.setName(userEntity.getName());
+                    HttpSession session = request.getSession();
+                    System.out.println(session.isNew());
+                    session.setAttribute("userId", userEntity.getUserId());
+                    session.setAttribute("name", userEntity.getName());
+                    System.out.println(session.getAttribute("userId"));
+                    //userInfo.setUserId(userEntity.getUserId());
+                    //userInfo.setName(userEntity.getName());
                     return true;
                 }
             } else {
@@ -169,12 +176,22 @@ public class MemberService implements UserDetailsService {
                 );
                 System.out.println(body);
                 mimeMessageHelper.setText(body.toString(), true);
-                mimeMessageHelper.addInline("codewith", new FileDataSource("C:/springStudy/backend/src/main/resources/static/img/send_email.jpg"));
+                mimeMessageHelper.addInline("codewith", new FileDataSource("C:/springStudy/backend/src/frontend/src/assets/send_email.jpg"));
                 javaMailSender.send(mimeMessage);
                 System.out.println("메일보내기 성공");
                 return true;
             }
         }
         return false;
+    }
+
+    //로그아웃
+    public void logout(HttpServletRequest request){
+        HttpSession session = request.getSession();
+        if(!session.isNew()){
+            System.out.println("세션삭제");
+            session.removeAttribute("userId");
+            session.removeAttribute("name");
+        }
     }
 }
