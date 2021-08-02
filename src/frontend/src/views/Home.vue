@@ -4,7 +4,9 @@
         <LoginPopup
             v-if="loginPopupState == 1" 
             :_loginPopupState = "loginPopupState"
+            :_loginState = "login.loginState"
             @_loginClose="loginClose"
+            @_completeLogin = "changeLoginState"
         ></LoginPopup>
         <CoursePopup
             v-if="coursePopupState == 1"
@@ -13,11 +15,13 @@
         ></CoursePopup>
         <Header 
             :_loginPopupState = "loginPopupState"
+            :_loginState = "login.loginState"
             @_loginOpen="loginOpen"
+            @_logout = "logout"
         ></Header>
         <div class="guide">
             <div class="greeting">
-            <strong> Welcome!</strong><br>
+            <strong>{{login.userName}}</strong><br>
             Free Course For Beginner<br>
             당신의 코딩학습에  코드윗이 함께할게요.
             </div>
@@ -59,6 +63,7 @@ import Header from "../components/layout/Header-dark.vue"
 import Background from "../components/layout/background-main.vue"
 import LoginPopup from "../components/layout/login-popup.vue"
 import CoursePopup from '../components/layout/course-popup.vue'
+import axios from "axios";
 
 
 export default {
@@ -74,6 +79,11 @@ export default {
       loginPopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
       windowTitle : ['HTML', 'CSS', 'JavaScript'],
       coursePopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
+      navMenuPopupState : 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
+      login : {
+        loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
+        userName : 'Welcome!'
+      }
     }
   },
   methods : {
@@ -89,6 +99,16 @@ export default {
     },
     courseClose() {
       this.coursePopupState = 0;
+    },
+    changeLoginState(loginState) {
+      this.login.loginState = loginState; //loginState 1로 변경(로그인 완료)
+      console.log("loginState : ", this.login.loginState);
+    },
+    logout(loginState) {
+      axios
+      .delete('http://5.35.217.11/api/logout');
+      this.login.loginState = loginState; //loginState 0으로 변경(로그아웃)
+      console.log("로그아웃합니다. / loginState : ", this.login.loginState);
     }
   }
 }
@@ -116,6 +136,7 @@ export default {
     background-size: cover;
     background-repeat: no-repeat;
     padding: 20px;
+    padding-bottom: 40px;
 }
 div {
   box-sizing: border-box;
@@ -132,7 +153,6 @@ h4 {
 }
 .guide .greeting {
   display: inline-block;
-  width: 350px;
   color: var(--color_white);
   text-align: left;
 }
@@ -192,6 +212,20 @@ h4 {
   body {
     overflow-y: scroll;
   }
+  #header .nav-menu {
+    display: none;
+  }
+  #header .nav-hamburger-menu {
+    display: block;
+    width: 28px; height: 28px;
+    padding: 0px;
+  }
+  #header .nav-hamburger-menu img{
+    width: 100%;
+  }
+  #header-light .nav-menu {
+    display: none;
+  }
   .guide {
     display: flex;
     justify-content: center;
@@ -204,7 +238,7 @@ h4 {
     flex-direction: column;
     justify-content: flex-start;
     gap: 10px;
-    width: 220px;
+    width: 220px; height: 100%;
     margin: auto;
   }
   .course-container .course {
