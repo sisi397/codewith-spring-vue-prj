@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.List;
 
@@ -22,8 +24,9 @@ public class StageFinishController {
     private UserInfo userInfo;
 
     @GetMapping("/api/stageFinish")
-    public List<StageFinish> getStageFinish() {
-        String userId = userInfo.getUserId();
+    public List<StageFinish> getStageFinish(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String userId = (String)(session.getAttribute("userId"));
         return stageFinishRepository.findAllByUserId(userId).orElseThrow(
                 () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
     }
