@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.List;
 
@@ -23,8 +25,9 @@ public class ScrapController {
     private UserInfo userInfo;
 
     @GetMapping("/api/scrap")
-    public List<Scrap> getScrap() {
-        String userId = userInfo.getUserId();
+    public List<Scrap> getScrap(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String userId = (String)(session.getAttribute("userId"));
         return scrapRepository.findAllByUserId(userId).orElseThrow(
                 () -> new IllegalArgumentException("페이지가 존재하지 않습니다."));
     }
