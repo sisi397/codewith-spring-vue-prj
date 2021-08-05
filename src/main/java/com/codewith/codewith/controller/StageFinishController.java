@@ -26,7 +26,8 @@ public class StageFinishController {
     @GetMapping("/api/stageFinish")
     public List<StageFinish> getStageFinish(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        String userId = (String)(session.getAttribute("userId"));
+        //String userId = (String)(session.getAttribute("userId"));
+        String userId = "id";
         return stageFinishRepository.findAllByUserId(userId).orElseThrow(
                 () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
     }

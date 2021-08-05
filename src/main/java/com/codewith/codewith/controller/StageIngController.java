@@ -26,8 +26,8 @@ public class StageIngController {
     @GetMapping("/api/stageIng/{course}")
     public StageIng getStageIng(@PathVariable int course, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        String userId = (String)(session.getAttribute("userId"));;
-        //String userId = "id";
+        //String userId = (String)(session.getAttribute("userId"));
+        String userId = "id";
         return stageIngRepository.findByUserIdAndCourse(userId,course).orElseThrow(() -> new IllegalArgumentException("존재하지 않습니다."));
     }
 //    @GetMapping("/api/stageIng")

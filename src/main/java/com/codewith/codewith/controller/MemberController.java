@@ -38,7 +38,7 @@ public class MemberController {
 //    }
 
     @GetMapping("/memberInfo")
-    public String get(HttpServletRequest request){
+    public MemberDto get(HttpServletRequest request){
         HttpSession session = request.getSession();
         System.out.println(session.isNew());
         System.out.println((String)(session.getAttribute("userId")));
@@ -46,10 +46,13 @@ public class MemberController {
         if(!(session.isNew())){
             String userId = (String)(session.getAttribute("userId"));
             String name = (String)(session.getAttribute("name"));
-            String result = "{userId:" + userId + "name:"  + name + "}";
-            return result;
+            //MemberDto memberDto = new MemberDto(userId,name);
+            MemberDto memberDto = new MemberDto("id","코드윗");
+            return memberDto;
         }else{
-            return null;
+            MemberDto memberDto = new MemberDto("id","코드윗");
+            return memberDto;
+            //return null;
         }
     }
 

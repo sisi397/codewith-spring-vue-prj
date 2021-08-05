@@ -27,7 +27,8 @@ public class ScrapController {
     @GetMapping("/api/scrap")
     public List<Scrap> getScrap(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        String userId = (String)(session.getAttribute("userId"));
+        //String userId = (String)(session.getAttribute("userId"));
+        String userId = "id";
         return scrapRepository.findAllByUserId(userId).orElseThrow(
                 () -> new IllegalArgumentException("페이지가 존재하지 않습니다."));
     }

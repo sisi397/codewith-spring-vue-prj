@@ -36,4 +36,10 @@ public class MemberDto {
         this.email = email;
         this.password = password;
     }
+
+    @Builder
+    public MemberDto(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
 }
