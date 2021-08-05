@@ -14,9 +14,9 @@ public class CssController {
     private final CssCodeRepository csscodeRepository;
     private final CssCodeService cssCodeService;
 
-    @GetMapping("/api/css/{id}")
-    public CssCode getCssCode(@PathVariable Long id) {
-        return csscodeRepository.findById(id).orElseThrow(
+    @GetMapping("/api/css/{stage}")
+    public CssCode getCssCode(@PathVariable int stage) {
+        return csscodeRepository.findByStage(stage).orElseThrow(
                 () -> new IllegalArgumentException("페이지가 존재하지 않습니다.")
         );
     }
