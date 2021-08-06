@@ -64,6 +64,7 @@ export default {
         border-radius: 20px;
         padding: 0px 30px;
         font-weight: 500;
+        border: thin solid #e2e2e2;
     }
     #header-light #logo {
         display: flex;

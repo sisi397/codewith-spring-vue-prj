@@ -63,8 +63,7 @@ import Header from "../components/layout/Header-dark.vue"
 import Background from "../components/layout/background-main.vue"
 import LoginPopup from "../components/layout/login-popup.vue"
 import CoursePopup from '../components/layout/course-popup.vue'
-import axios from "axios";
-
+import axios from "axios"
 
 export default {
   name: 'App',
@@ -73,18 +72,21 @@ export default {
   },
   data() {
     return {
-      selectWindow : '', //선택된 코스 이름이 들어가는 변수
-      courseImg : ['../assets/img_cresent-moon-white.svg', '../assets/img_half-moon-white.svg', '../assets/img_full-moon-white.svg'],
-      courseStyle : ['align-self: flex-end' ,'align-self: center','align-self: flex-start'],
-      loginPopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
-      windowTitle : ['HTML', 'CSS', 'JavaScript'],
-      coursePopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
-      navMenuPopupState : 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
-      login : {
-        loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
-        userName : 'Welcome!'
+      selectWindow: '', //선택된 코스 이름이 들어가는 변수
+      courseImg: ['../assets/img_cresent-moon-white.svg', '../assets/img_half-moon-white.svg', '../assets/img_full-moon-white.svg'],
+      courseStyle: ['align-self: flex-end', 'align-self: center', 'align-self: flex-start'],
+      loginPopupState: 0, //0은 창 닫힌 상태, 1은 창 열린 상태
+      windowTitle: ['HTML', 'CSS', 'JavaScript'],
+      coursePopupState: 0, //0은 창 닫힌 상태, 1은 창 열린 상태
+      navMenuPopupState: 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
+      login: {
+        loginState: 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
+        userName: 'Welcome!'
       }
     }
+  },
+  created(){
+    this.memberInfo();
   },
   methods : {
     loginOpen() {
@@ -105,10 +107,20 @@ export default {
       console.log("loginState : ", this.login.loginState);
     },
     logout(loginState) {
-      axios
-      .delete('http://5.35.217.11/api/logout');
       this.login.loginState = loginState; //loginState 0으로 변경(로그아웃)
       console.log("로그아웃합니다. / loginState : ", this.login.loginState);
+    },
+    memberInfo(){
+      axios
+          .get("http://3.36.131.138/memberInfo")
+          .then(res => {
+            this.login.userName = res.data.userId;
+            console.log(res.data.userId);
+            console.log(this.userName)
+          })
+          .catch(err => {
+            console.log(err);
+          })
     }
   }
 }

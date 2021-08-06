@@ -114,7 +114,7 @@ export default {
         submitForm(){
             console.log("submitForm 함수 실행됨");
             axios
-            .post('http://5.35.217.11/api/signup', {
+            .post('http://3.36.131.138/api/signup', {
                 userId : this.signupForm.signupId,
                 email: this.signupForm.signupEmail,
                 password: this.signupForm.signupPassword,

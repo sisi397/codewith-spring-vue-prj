@@ -2,8 +2,8 @@
 <div id="login-popup">
   <div class="black-bg" @click="closeLoginPopup">
   </div>
-  <form class="login-popup-content">
-     <div class="login-form-hide">
+  <form class="login-popup-content" @submit.prevent="onSubmit">
+      <div class="login-form-hide">
         <img class="hide-btn" @click="closeLoginPopup" src="../../assets/btn_close.svg" alt="">
       </div>
       <h4 class="popup-title">{{popup.popupTitle}}</h4>
@@ -11,24 +11,20 @@
         <div class="form-container">
           <div class="user-inform">
             <!-- 아이디 -->
-            <input type="text" v-model="loginId" v-if="popup.popupSort == 'password' || popup.popupSort == 'login'" placeholder="아이디">
+            <input type="text" v-model="loginId" placeholder="아이디">
             <div class="login-guide" v-if="idGuideDisplay == 1">아이디를 입력해주세요.</div>
-            <input type="text" v-model="name" v-if="popup.popupSort == 'id'" placeholder="이름">
           </div>
           <div class="user-inform">
             <!-- 비밀번호 -->
-            <input type="password" v-model="loginPassword" v-if="popup.popupSort == 'login'" placeholder="비밀번호">
+            <input type="password" v-model="loginPassword" placeholder="비밀번호">
             <div class="login-guide" v-if="passwordGuideDisplay == 1">비밀번호를 입력해주세요.</div>
-            <input type="text" v-model="email" v-if="popup.popupSort == 'password'||popup.popupSort == 'id'" placeholder="이메일">
           </div>
         </div>
         <div class="signup-guide-container">
           <span class="guide-to-signup">아직 회원이 아니세요?</span>
           <router-link to="/Signup" class="move-to-signup">회원가입</router-link>
         </div>
-        <img class="login-btn" v-if="popup.popupSort == 'login'" @click="onSubmit" src="../../assets/btn_login.svg" alt="btn_login">
-        <img class="login-btn" v-if="popup.popupSort == 'id'" @click="idFindSubmit" src="../../assets/btn_login.svg" alt="btn_login">
-        <img class="login-btn" v-if="popup.popupSort == 'password'" @click="passFindSubmit" src="../../assets/btn_login.svg" alt="btn_login">
+        <button type="submit"><img class="login-btn" src="../../assets/btn_login.svg" alt="btn_login"></button>
         <div class="find-container">
           <span @click="findId" v-if="popup.popupSort == 'password' || popup.popupSort == 'login'">아이디 찾기</span>
           <span v-if="popup.popupSort == 'login'"> | </span>
@@ -56,8 +52,6 @@ export default {
         loginPopupState : this._loginPopupState,
         loginId : '',
         loginPassword : '',
-        name :'',
-        email : '',
         idGuideDisplay : 0, //1일 되면 아이디 입력 메세지 보여줌
         passwordGuideDisplay : 0, //1일 되면 비번 입력 메세지 보여줌
         loginNullcheck : true, //true : 아이디,비밀번호가 비어있음, false : 아이디, 비밀번호가 모두 입력됨(로그인 가능 상태)
@@ -93,33 +87,34 @@ export default {
       },
       onSubmit() {
         console.log("onsubmit 함수 실행됨");
-          this.loginGuide();
-          if (this.loginNullcheck == false) {
-            axios
-                .post('http://5.35.217.11/api/login', {
-                  userId : this.loginId,
-                  password : this.loginPassword
-                })
-                .then(res => { //로그인 성공
-                  console.log(res);
-                  if(res.data){
-                    this.closeLoginPopup();
-                    this.completeLogin();
-                  }else{
-                    alert("아이디 또는 비밀번호가 틀렸습니다.");
-                  }
-                })
-                .catch(err => {
-                  console.log(err);
-                })
-          }
+        this.loginGuide();
+        if (this.loginNullcheck == false) {
+          axios
+          .post('http://3.36.131.138/api/login', {
+            userId : this.loginId,
+            password : this.loginPassword
+          })
+          .then(res => { //로그인 성공
+            console.log(res);
+            if(res.data){
+              this.closeLoginPopup();
+              this.completeLogin();
+            }else{
+              alert("아이디 또는 비밀번호가 틀렸습니다.");
+            }
+          })
+          .catch(err => {
+              console.log(err);
+          })
+        }
       },
       userInfo() {
         console.log("userInfo 함수를 수행합니다.");
         axios
-        .get("http://5.35.217.11/memberInfo")
+        .get("http://3.36.131.138/memberInfo")
         .then(res => {
-          console.log(res);
+          console.log(res.data.userId);
+          console.log(res.data.name);
         })
         .catch(err => {
           console.log(err);
@@ -144,37 +139,7 @@ export default {
         this.popup.index = 0
         this.popup.popupTitle = '로그인';
         this.popup.popupSort = 'login'
-      },
-      async idFindSubmit(){
-        await axios.post('http://5.35.217.11/api/idFind', {
-          name : this.name,
-          email : this.email
-        }).then(response=>{
-          console.log(response.data);
-          if(response.data!=null){
-            alert("아이디는 " + response.data + " 입니다.");
-          }else{
-            alert("해당하는 아이디가 없습니다.");
-          }
-        }).catch(function (error){
-          console.log(error);
-        });
-      },
-      async passFindSubmit(){
-        await axios.put('http://5.35.217.11/api/passFind', {
-          userId : this.userId,
-          email : this.email
-        }).then(response=>{
-          console.log(response);
-          if(response.data){
-            alert("이메일로 임시비밀번호가 전송되었습니다.");
-          }else{
-            alert("해당하는 아이디가 없습니다.");
-          }
-        }).catch(function (error){
-          console.log(error);
-        });
-      },
+      }
     }
   }
 </script>
@@ -225,7 +190,7 @@ export default {
   border-radius: 50px;
 }
 #login-popup .login-form-hide:hover {
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: rgb(0, 0, 0, 0.08);
   cursor: pointer;
 }
 #login-popup .hide-btn {
