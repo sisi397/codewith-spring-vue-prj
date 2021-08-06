@@ -200,11 +200,19 @@ public class CodewithApplication {
 
     //비밀번호 찾기 Test
     @Bean
-    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, ScrapRepository scrapRepository, StageFinishRepository userCodeRepository) {
+    public CommandLineRunner demo(MemberRepository memberRepository, MemberService memberService, StageIngRepository stageIngRepository, ScrapRepository scrapRepository, StageFinishRepository stageFinishRepository) {
         return (args) -> {
-            MemberDto memberDto = new MemberDto(1L,"id","name","tldms9700@gmail.com","pass");
-
-            Member member = memberService.joinUser(memberDto);
+//            StageFinish si = new StageFinish("id", 2, 2);
+//            stageFinishRepository.save(si);
+//            StageFinish si2 = new StageFinish("id", 2, 2);
+//            stageFinishRepository.save(si2);
+//            Scrap si1 = new Scrap("id", 2, 2);
+//            scrapRepository.save(si1);
+//            Scrap s4 = new Scrap("id", 2, 2);
+//            scrapRepository.save(s4);
+//            MemberDto memberDto = new MemberDto(1L,"id","name","tldms9700@gmail.com","pass");
+//
+//            Member member = memberService.joinUser(memberDto);
 //            System.out.println(member);
 //            System.out.println(memberService.passRand());
 //
