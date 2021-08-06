@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
 @RestController
 public class StageIngController {
@@ -24,11 +25,20 @@ public class StageIngController {
     private UserInfo userInfo;
 
     @GetMapping("/api/stageIng/{course}")
-    public StageIng getStageIng(@PathVariable int course, HttpServletRequest request) {
+    public List<StageIng> getStageIng(@PathVariable int course, HttpServletRequest request) {
         HttpSession session = request.getSession();
         //String userId = (String)(session.getAttribute("userId"));
         String userId = "id";
-        return stageIngRepository.findByUserIdAndCourse(userId,course).orElseThrow(() -> new IllegalArgumentException("존재하지 않습니다."));
+        return stageIngRepository.findAllByUserIdAndCourse(userId,course).orElseThrow(() -> new IllegalArgumentException("존재하지 않습니다."));
+    }
+
+    //전체 데이터 불러오기
+    @GetMapping("/api/stageIng")
+    public List<StageIng> getStageIngAll(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        //String userId = (String)(session.getAttribute("userId"));
+        String userId = "id";
+        return stageIngRepository.findAllByUserId(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않습니다."));
     }
 //    @GetMapping("/api/stageIng")
 //    public List<StageIng> getStageIng(Principal principal) {
