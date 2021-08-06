@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Scrap {
+public class Scrap extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

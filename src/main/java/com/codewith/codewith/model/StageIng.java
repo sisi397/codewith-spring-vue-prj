@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class StageIng {
+public class StageIng extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
