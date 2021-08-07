@@ -31,17 +31,26 @@ public class Member {
     @Column(length = 100, nullable = false)
     private String password;
 
+    @Column
+    private String filename;
+
     @Builder
-    public Member(Long id, String userId, String name, String email, String password) {
+    public Member(Long id, String userId, String name, String email, String password, String filename) {
         this.id = id;
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.filename = filename;
     }
 
     public void update(String password) {
         System.out.println("비밀번호 update 시작");
         this.password = password;
+    }
+
+    public void updateFile(String file){
+        System.out.println("파일 업로드 update");
+        this.filename = file;
     }
 }

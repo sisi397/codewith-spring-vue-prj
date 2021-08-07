@@ -15,6 +15,7 @@ public class MemberDto {
     private String name;
     private String email;
     private String password;
+    private String filename;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -25,6 +26,7 @@ public class MemberDto {
                 .name(name)
                 .email(email)
                 .password(password)
+                .filename(filename)
                 .build();
     }
 

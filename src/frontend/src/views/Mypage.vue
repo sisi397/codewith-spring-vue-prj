@@ -10,6 +10,7 @@
             @_loginOpen = "loginOpen"
         ></HeaderLight>
         <body>
+        <form class="form-container" @submit.prevent="imageUpload">
             <div class="left-section-mypage">
                 <img src="../assets/img_profile-default.svg" class="user-img" alt="profile-img">
                 <button type="button" class="input-btn">
@@ -18,8 +19,10 @@
                     </label>
                     <input type="file" id="input-file" src="../assets/btn_plus.svg" accept="" style="display:none">
                 </button>
+                <button type="submit"><img class="signup-btn" src="../assets/btn_signup.svg" alt=""></button>
                 <h2>{{userName}}</h2>
             </div>
+        </form>
             <div class="right-section-mypage">
                 <div class="select-step">
                     <button type="button" class="step-in-progress-btn" @click="stepInProgressState = true, stepCompleteState = false, stepScrappedState = false">진행중인 단계</button>
@@ -63,7 +66,6 @@
                         </ol>
                     </div>
                 </div>
-            
             </div>
         </body>
     </div>
@@ -91,7 +93,6 @@ export default {
             stepInProgressState : true,
             stepCompleteState : false,
             stepScrappedState  : false
-
         }
     },
   created() {
@@ -140,6 +141,21 @@ export default {
         },
         loginClose() {
             this.loginPopupState = 0;
+        },
+        imageUpload(){
+          var frm = new FormData();
+          var photoFile = document.getElementById("input-file");
+          frm.append("file", photoFile.files[0]);
+          axios
+          .post("http://3.36.131.138/api/fileUpload", frm, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          })
+          .then(res=>{
+            console.log(res);
+          })
+          .catch(err=>{
+            console.log(err);
+          })
         }
     }
 }

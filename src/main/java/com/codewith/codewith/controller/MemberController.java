@@ -1,23 +1,21 @@
 package com.codewith.codewith.controller;
 
+import com.codewith.codewith.dto.FileDto;
 import com.codewith.codewith.dto.MemberDto;
 import com.codewith.codewith.model.Member;
-import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.service.MemberService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.security.Principal;
+import javax.swing.filechooser.FileSystemView;
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -25,17 +23,6 @@ import java.util.List;
 public class MemberController {
     private MemberService memberService;
     private MemberRepository memberRepository;
-
-    @Resource
-    private UserInfo userInfo;
-    //로그인한 멤버 정보받기
-//    @GetMapping("/memberInfo")
-//    public Member getMemberInfo(Principal principal) {
-//        System.out.println(principal);
-//        Member member =memberRepository.findByUserId(principal.getName()).orElseThrow(
-//                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-//        return member;
-//    }
 
     @GetMapping("/memberInfo")
     public MemberDto get(HttpServletRequest request){
@@ -61,18 +48,6 @@ public class MemberController {
         return memberRepository.findAll();
     }
 
-
-    // 메인 페이지
-//    @GetMapping("/")
-//    public String index() {
-//        return "/index.html";
-//    }
-//
-//    // 회원가입 페이지
-//    @GetMapping("/user/signup")
-//    public String dispSignup() {
-//        return "redirect:/Signup";
-//    }
     // 회원가입 처리
     @PostMapping("/api/signup")
     public Member createSignup(@RequestBody MemberDto memberDto) {
@@ -105,37 +80,21 @@ public class MemberController {
         memberService.logout(request);
     }
 
-//    @GetMapping("/loginPage")
-//    public String dispLogin(){
-//        return "login.html";
-//    }
-//    // 로그인 페이지
-//    @GetMapping("/user/login")
-//    public String dispLogin() {
-//        return "/";
-//    }
-//
-//    // 로그인 결과 페이지
-//    @GetMapping("/user/login/result")
-//    public String dispLoginResult() {
-//        return "/";
-//    }
-//
-//    // 로그아웃 결과 페이지
-//    @GetMapping("/user/logout/result")
-//    public String dispLogout() {
-//        return "/";
-//    }
-//
-//    // 접근 거부 페이지
-//    @GetMapping("/user/denied")
-//    public String dispDenied() {
-//        return "/";
-//    }
-
-//    // 내 정보 페이지
-//    @GetMapping("/user/info")
-//    public String dispMyInfo() {
-//        return "/Mypage";
-//    }
+    //파일 업로드
+    @PostMapping("/api/fileUpload")
+    public void updatefileUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception{
+        System.out.println("파일업로드 시작");
+        HttpSession session = request.getSession();
+        MemberDto memberDto;
+        if(!(session.isNew())){
+            String userId = (String)(session.getAttribute("userId"));
+            String name = (String)(session.getAttribute("name"));
+            //MemberDto memberDto = new MemberDto(userId,name);
+            memberDto = new MemberDto("id","코드윗");
+        }else{
+            memberDto = new MemberDto("id","코드윗");
+            //return null;
+        }
+        memberService.fileUpload(file, memberDto);
+    }
 }

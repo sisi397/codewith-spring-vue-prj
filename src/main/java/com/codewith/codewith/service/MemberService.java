@@ -1,5 +1,6 @@
 package com.codewith.codewith.service;
 
+import com.codewith.codewith.dto.FileDto;
 import com.codewith.codewith.model.Role;
 import com.codewith.codewith.model.Member;
 import com.codewith.codewith.model.Scrap;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.FileDataSource;
 import javax.annotation.Resource;
@@ -28,11 +31,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.File;
+import java.util.*;
 import java.lang.String;
-import java.util.Random;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @Service
@@ -193,5 +194,21 @@ public class MemberService implements UserDetailsService {
             session.removeAttribute("userId");
             session.removeAttribute("name");
         }
+    }
+
+    //파일 업로드
+    public void fileUpload(MultipartFile file, MemberDto memberDto) throws Exception{
+        System.out.println("파일업로드 시작");
+        FileDto dto = new FileDto(UUID.randomUUID().toString(), file.getOriginalFilename(), file.getContentType());
+        File newFileName = new File(dto.getUuid() + "_" + dto.getFileName());
+
+        Optional<Member> userEntityWrapper = memberRepository.findByUserId(memberDto.getUserId());
+        if(userEntityWrapper.isPresent()) {
+            Member userEntity = userEntityWrapper.get();
+            userEntity.updateFile(dto.getUuid() + "_" + dto.getFileName());
+            memberRepository.save(userEntity);
+        }
+
+        file.transferTo(newFileName);
     }
 }
