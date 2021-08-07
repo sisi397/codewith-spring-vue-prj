@@ -196,6 +196,21 @@ public class MemberService implements UserDetailsService {
         }
     }
 
+    //파일 불러오기
+    public String fileFind(String userId){
+        System.out.println("파일불러오기");
+        Optional<Member> userEntityWrapper = memberRepository.findByUserId(userId);
+        System.out.println(userId);
+        if(userEntityWrapper.isPresent()){
+            System.out.println("파일불러오기2");
+            Member userEntity = userEntityWrapper.get();
+            return userEntity.getFilename();
+            //C:/Temp  /home/ubuntu/images
+        }else{
+            return null;
+        }
+    }
+
     //파일 업로드
     public void fileUpload(MultipartFile file, MemberDto memberDto) throws Exception{
         System.out.println("파일업로드 시작");

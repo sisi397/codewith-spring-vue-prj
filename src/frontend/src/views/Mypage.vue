@@ -12,7 +12,7 @@
         <body>
         <form class="form-container" @submit.prevent="imageUpload">
             <div class="left-section-mypage">
-                <img src="../assets/img_profile-default.svg" class="user-img" alt="profile-img">
+                <img src="{{userImage}}" class="user-img" alt="profile-img">
                 <button type="button" class="input-btn">
                     <label img="../assets/btn_plus.svg" for="input-file">
                         <img src="../assets/btn_plus.svg" alt="add-image" class="add-img" >
@@ -85,7 +85,7 @@ export default {
     data() {
         return {
             loginPopupState : 0,
-            userImage : "",
+            userImage : "../assets/img_profile-default.svg",
             userName : '',
             stepInProgress : [],
             stepComplete : [],
@@ -134,6 +134,7 @@ export default {
         .catch(err => {
           console.log(err);
         })
+    this.userImg();
   },
   methods : {
         loginOpen() {
@@ -147,16 +148,33 @@ export default {
           var photoFile = document.getElementById("input-file");
           frm.append("file", photoFile.files[0]);
           axios
-          .post("http://3.36.131.138/api/fileUpload", frm, {
+          .post("http://3.36.131.138/api/userImg", frm, {
             headers: { 'Content-Type': 'multipart/form-data' }
           })
           .then(res=>{
             console.log(res);
+            this.userImg();
           })
           .catch(err=>{
             console.log(err);
           })
-        }
+        },
+      userImg(){
+        axios
+            .get("http://3.36.131.138/api/userImg")
+            .then(res=>{
+              console.log(res);
+              console.log(res.data);
+              if(res.data==null){
+                this.userImage="/home/ubuntu/images/53df9f25-6cc3-4a53-8ae7-771d594be0a5_캡처.JPG"
+              }else{
+                this.userImage = "/home/ubuntu/images" + res.data
+              }
+            })
+            .catch(err=>{
+              console.log(err);
+            })
+      },
     }
 }
 </script>

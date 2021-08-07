@@ -6,6 +6,7 @@ import com.codewith.codewith.model.Member;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.service.MemberService;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,8 +81,21 @@ public class MemberController {
         memberService.logout(request);
     }
 
+    //user 파일 가져오기
+    @GetMapping("/api/userImg")
+    public String getuserFile(HttpServletRequest request){
+        HttpSession session = request.getSession();
+        if(!(session.isNew())){
+            //String userId = (String)(session.getAttribute("userId"));
+            return memberService.fileFind("id");
+        }else{
+            return memberService.fileFind("id");
+            //return null;
+        }
+    }
+
     //파일 업로드
-    @PostMapping("/api/fileUpload")
+    @PostMapping("/api/userImg")
     public void updatefileUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception{
         System.out.println("파일업로드 시작");
         HttpSession session = request.getSession();

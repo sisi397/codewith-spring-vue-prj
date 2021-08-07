@@ -212,7 +212,7 @@ public class CodewithApplication {
 //            scrapRepository.save(s4);
             //MemberDto memberDto = new MemberDto(1L,"id","name","tldms9700@gmail.com","pass");
 //
-           // Member member = memberService.joinUser(memberDto);
+            //Member member = memberService.joinUser(memberDto);
 //            System.out.println(member);
 //            System.out.println(memberService.passRand());
 //
