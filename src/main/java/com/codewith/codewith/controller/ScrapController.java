@@ -29,8 +29,7 @@ public class ScrapController {
         HttpSession session = request.getSession();
         //String userId = (String)(session.getAttribute("userId"));
         String userId = "id";
-        return scrapRepository.findAllByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("페이지가 존재하지 않습니다."));
+        return scrapRepository.findAllByUserId(userId).get();
     }
 
     @GetMapping("/api/scrap/{course}/{stage}")
@@ -39,8 +38,7 @@ public class ScrapController {
         //String userId = (String)(session.getAttribute("userId"));
         String userId = "id";
 
-        return scrapRepository.findByUserIdAndCourseAndStage(userId,course,stage).orElseThrow(
-                () -> new IllegalArgumentException("페이지가 존재하지 않습니다."));
+        return scrapRepository.findByUserIdAndCourseAndStage(userId,course,stage).get();
     }
 
 

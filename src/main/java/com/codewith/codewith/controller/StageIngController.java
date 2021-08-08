@@ -25,11 +25,11 @@ public class StageIngController {
     private UserInfo userInfo;
 
     @GetMapping("/api/stageIng/{course}")
-    public List<StageIng> getStageIng(@PathVariable int course, HttpServletRequest request) {
+    public StageIng getStageIng(@PathVariable int course, HttpServletRequest request) {
         HttpSession session = request.getSession();
         //String userId = (String)(session.getAttribute("userId"));
         String userId = "id";
-        return stageIngRepository.findAllByUserIdAndCourse(userId,course).orElseThrow(() -> new IllegalArgumentException("존재하지 않습니다."));
+        return stageIngRepository.findByUserIdAndCourse(userId,course).get();
     }
 
     //전체 데이터 불러오기
@@ -38,7 +38,7 @@ public class StageIngController {
         HttpSession session = request.getSession();
         //String userId = (String)(session.getAttribute("userId"));
         String userId = "id";
-        return stageIngRepository.findAllByUserId(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않습니다."));
+        return stageIngRepository.findAllByUserId(userId).get();
     }
 //    @GetMapping("/api/stageIng")
 //    public List<StageIng> getStageIng(Principal principal) {

@@ -28,8 +28,7 @@ public class StageFinishController {
         HttpSession session = request.getSession();
         //String userId = (String)(session.getAttribute("userId"));
         String userId = "id";
-        return stageFinishRepository.findAllByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
+        return stageFinishRepository.findAllByUserId(userId).get();
     }
 
     //POST (INSERT)
