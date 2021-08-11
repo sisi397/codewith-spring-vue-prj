@@ -60,9 +60,19 @@ public class ScrapController {
     }
 
     //DELETE
-    @DeleteMapping("/api/scrap/{id}")
-    public Long deleteScrap(@PathVariable Long id){
-        scrapRepository.deleteById(id);
+    @DeleteMapping("/api/scrap/{course}/{stage}")
+    public Long deleteScrap(HttpServletRequest request, @PathVariable int course, @PathVariable int stage){
+        HttpSession session = request.getSession();
+        //String userId = (String)(session.getAttribute("userId"));
+        String userId = "id";
+        Long id = null;
+        
+        boolean present = scrapRepository.findByUserIdAndCourseAndStage(userId,course,stage).isPresent();
+        if(present) {
+            id = scrapRepository.findByUserIdAndCourseAndStage(userId,course,stage).get().getId();
+            scrapRepository.deleteById(id);
+        }
+        
         return id;
     }
 }
