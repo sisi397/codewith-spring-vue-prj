@@ -5,12 +5,14 @@
             v-if="loginPopupState == 1" 
             :_loginPopupState = "loginPopupState"
             :_loginState = "login.loginState"
+            :_userName = "login.userName"
             @_loginClose="loginClose"
             @_completeLogin = "changeLoginState"
         ></LoginPopup>
         <CoursePopup
             v-if="coursePopupState == 1"
-            :_selectWindow = "selectWindow"
+            :_userName = "login.userName"
+            :_selectCourse = "selectCourse"
             @_courseClose = "courseClose"
         ></CoursePopup>
         <Header 
@@ -21,7 +23,7 @@
         ></Header>
         <div class="guide">
             <div class="greeting">
-            <strong>{{login.userName}}</strong><br>
+            <strong>{{login.userName}}!</strong><br>
             Free Course For Beginner<br>
             당신의 코딩학습에  코드윗이 함께할게요.
             </div>
@@ -30,21 +32,21 @@
         <div class="course-container">
             <div class="course" style="align-self: flex-end;">
               <img class="course-moon" src="../assets/img_cresent-moon-white.svg" alt="">
-              <div class="course-box" @click="courseOpen(0)">
+              <div class="course-box" @click="courseOpen(1)">
                   <img src="../assets/course/html.svg" alt="">
                   <div class="course-name">HTML<br>Course</div>
               </div>
             </div>
             <div class="course" style="align-self: center">
               <img class="course-moon" src="../assets/img_half-moon-white.svg" alt="">
-              <div class="course-box" @click="courseOpen(1)">
+              <div class="course-box" @click="courseOpen(2)">
                   <img src="../assets/course/css.svg" alt="">
                   <div class="course-name">CSS<br>Course</div>
               </div>
             </div>
             <div class="course" style="align-self: flex-start">
               <img class="course-moon" src="../assets/img_full-moon-white.svg" alt="">
-              <div class="course-box" @click="courseOpen(2)">
+              <div class="course-box" @click="courseOpen(3)">
                   <img src="../assets/course/js.svg" alt="">
                   <div class="course-name">JavaScript<br>Course</div>
               </div>
@@ -63,7 +65,7 @@ import Header from "../components/layout/Header-dark.vue"
 import Background from "../components/layout/background-main.vue"
 import LoginPopup from "../components/layout/login-popup.vue"
 import CoursePopup from '../components/layout/course-popup.vue'
-import axios from "axios"
+
 
 export default {
   name: 'App',
@@ -72,21 +74,18 @@ export default {
   },
   data() {
     return {
-      selectWindow: '', //선택된 코스 이름이 들어가는 변수
-      courseImg: ['../assets/img_cresent-moon-white.svg', '../assets/img_half-moon-white.svg', '../assets/img_full-moon-white.svg'],
-      courseStyle: ['align-self: flex-end', 'align-self: center', 'align-self: flex-start'],
-      loginPopupState: 0, //0은 창 닫힌 상태, 1은 창 열린 상태
-      windowTitle: ['HTML', 'CSS', 'JavaScript'],
-      coursePopupState: 0, //0은 창 닫힌 상태, 1은 창 열린 상태
-      navMenuPopupState: 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
-      login: {
-        loginState: 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
-        userName: 'Welcome!'
+      selectCourse : 0, // html : 1, css : 2, javascript : 3
+      courseImg : ['../assets/img_cresent-moon-white.svg', '../assets/img_half-moon-white.svg', '../assets/img_full-moon-white.svg'],
+      courseStyle : ['align-self: flex-end' ,'align-self: center','align-self: flex-start'],
+      loginPopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
+      // windowTitle : ['HTML', 'CSS', 'JavaScript'],
+      coursePopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
+      navMenuPopupState : 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
+      login : {
+        loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
+        userName : 'Welcome'
       }
     }
-  },
-  created(){
-    this.memberInfo();
   },
   methods : {
     loginOpen() {
@@ -96,31 +95,21 @@ export default {
       this.loginPopupState = 0;
     },
     courseOpen(course) {
-      this.selectWindow = this.windowTitle[course]
+      this.selectCourse = course;
       this.coursePopupState = 1;
     },
     courseClose() {
       this.coursePopupState = 0;
     },
-    changeLoginState(loginState) {
+    changeLoginState(loginState, userName) {
       this.login.loginState = loginState; //loginState 1로 변경(로그인 완료)
       console.log("loginState : ", this.login.loginState);
+      this.login.userName = userName + '님'; //환영문구를 welcome!에서 유저이름!으로 변경
     },
     logout(loginState) {
       this.login.loginState = loginState; //loginState 0으로 변경(로그아웃)
+      this.login.userName = "welcome";
       console.log("로그아웃합니다. / loginState : ", this.login.loginState);
-    },
-    memberInfo(){
-      axios
-          .get("http://3.36.131.138/memberInfo")
-          .then(res => {
-            this.login.userName = res.data.userId;
-            console.log(res.data.userId);
-            console.log(this.userName)
-          })
-          .catch(err => {
-            console.log(err);
-          })
     }
   }
 }
@@ -223,17 +212,6 @@ h4 {
 @media screen and (max-width : 1040px) {
   body {
     overflow-y: scroll;
-  }
-  #header .nav-menu {
-    display: none;
-  }
-  #header .nav-hamburger-menu {
-    display: block;
-    width: 28px; height: 28px;
-    padding: 0px;
-  }
-  #header .nav-hamburger-menu img{
-    width: 100%;
   }
   #header-light .nav-menu {
     display: none;

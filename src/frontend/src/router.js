@@ -25,7 +25,8 @@ const router = createRouter({
         {
             path : '/Training',
             name : 'Training',
-            component : Training
+            component : Training,
+            props : true
         }
     ]
 })

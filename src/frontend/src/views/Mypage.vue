@@ -10,19 +10,16 @@
             @_loginOpen = "loginOpen"
         ></HeaderLight>
         <body>
-        <form class="form-container" @submit.prevent="imageUpload">
             <div class="left-section-mypage">
-                <img src="{{userImage}}" class="user-img" alt="profile-img">
+                <img src="../assets/img_profile-default.svg" class="user-img" alt="profile-img">
                 <button type="button" class="input-btn">
                     <label img="../assets/btn_plus.svg" for="input-file">
                         <img src="../assets/btn_plus.svg" alt="add-image" class="add-img" >
                     </label>
                     <input type="file" id="input-file" src="../assets/btn_plus.svg" accept="" style="display:none">
                 </button>
-                <button type="submit"><img class="signup-btn" src="../assets/btn_signup.svg" alt=""></button>
                 <h2>{{userName}}</h2>
             </div>
-        </form>
             <div class="right-section-mypage">
                 <div class="select-step">
                     <button type="button" class="step-in-progress-btn" @click="stepInProgressState = true, stepCompleteState = false, stepScrappedState = false">진행중인 단계</button>
@@ -31,41 +28,60 @@
                 </div>
                 <div class="step-lists">
                     <div class="step-in-progress" v-if="stepInProgressState == true">
-                        <ol class="step-list" v-for="(setpWich, index) in stepInProgress" :key="index">
-                            <li v-if="stepInProgress[index].course===1">HTML</li>
-                            <li v-if="stepInProgress[index].course===2">CSS</li>
-                            <li v-if="stepInProgress[index].course===3">JAVASCRIPT</li>
-                            <li v-if="stepInProgress[index].stage===1">튜토리얼</li>
-                            <li v-if="stepInProgress[index].stage===2">달력만들기</li>
-                            <li v-if="stepInProgress[index].stage===3">회원가입창 만들기</li>
-                            <li>{{stepInProgress[index].modifiedAt}}</li>
+                        <ol class="step-list">
+                            <li>{{stepInProgress.stepWhich}}</li>
+                            <li>{{stepInProgress.stepWhere}}</li>
+                            <li>{{stepInProgress.stepWhen}}</li>    
+                        </ol>
+                        <ol class="step-list">
+                            <li>{{stepInProgress.stepWhich}}</li>
+                            <li>{{stepInProgress.stepWhere}}</li>
+                            <li>{{stepInProgress.stepWhen}}</li>    
+                        </ol>
+                        <ol class="step-list">
+                            <li>{{stepInProgress.stepWhich}}</li>
+                            <li>{{stepInProgress.stepWhere}}</li>
+                            <li>{{stepInProgress.stepWhen}}</li>    
                         </ol>
                     </div>
                     
                     <div class="step-complete" v-if="stepCompleteState == true">
-                        <ol class="step-list" v-for="(setpWich, index) in stepComplete" :key="index">
-                          <li v-if="stepComplete[index].course===1">HTML</li>
-                          <li v-if="stepComplete[index].course===2">CSS</li>
-                          <li v-if="stepComplete[index].course===3">JAVASCRIPT</li>
-                          <li v-if="stepComplete[index].stage===1">튜토리얼</li>
-                          <li v-if="stepComplete[index].stage===2">달력만들기</li>
-                          <li v-if="stepComplete[index].stage===3">회원가입창 만들기</li>
-                          <li>{{stepComplete[index].modifiedAt}}</li>
+                        <ol class="step-list">
+                            <li>{{stepComplete.stepWhich}}</li>
+                            <li>{{stepComplete.stepWhere}}</li>
+                            <li>{{stepComplete.stepWhen}}</li>    
+                        </ol>
+                        <ol class="step-list">
+                            <li>{{stepComplete.stepWhich}}</li>
+                            <li>{{stepComplete.stepWhere}}</li>
+                            <li>{{stepComplete.stepWhen}}</li>    
+                        </ol>
+                        <ol class="step-list">
+                            <li>{{stepComplete.stepWhich}}</li>
+                            <li>{{stepComplete.stepWhere}}</li>
+                            <li>{{stepComplete.stepWhen}}</li>    
                         </ol>
                     </div>
                     
                     <div class="step-scrapped" v-if="stepScrappedState == true">
-                        <ol class="step-list" v-for="(setpWich, index) in stepScrapped" :key="index">
-                          <li v-if="stepScrapped[index].course===1">HTML</li>
-                          <li v-if="stepScrapped[index].course===2">CSS</li>
-                          <li v-if="stepScrapped[index].course===3">JAVASCRIPT</li>
-                          <li v-if="stepScrapped[index].stage===1">튜토리얼</li>
-                          <li v-if="stepScrapped[index].stage===2">달력만들기</li>
-                          <li v-if="stepScrapped[index].stage===3">회원가입창 만들기</li>
-                          <li>{{stepScrapped[index].modifiedAt}}</li>
+                        <ol class="step-list">
+                            <li>{{stepScrapped.stepWhich}}</li>
+                            <li>{{stepScrapped.stepWhere}}</li>
+                            <li>{{stepScrapped.stepWhen}}</li>    
+                        </ol>
+                        <ol class="step-list">
+                            <li>{{stepScrapped.stepWhich}}</li>
+                            <li>{{stepScrapped.stepWhere}}</li>
+                            <li>{{stepScrapped.stepWhen}}</li>    
+                        </ol>
+                        <ol class="step-list">
+                            <li>{{stepScrapped.stepWhich}}</li>
+                            <li>{{stepScrapped.stepWhere}}</li>
+                            <li>{{stepScrapped.stepWhen}}</li>    
                         </ol>
                     </div>
                 </div>
+            
             </div>
         </body>
     </div>
@@ -74,7 +90,6 @@
 <script>
 import HeaderLight from "../components/layout/Header-light.vue"
 import LoginPopup from "../components/layout/login-popup.vue"
-import axios from "axios";
 //import axios from "axios"
 
 export default {
@@ -85,96 +100,36 @@ export default {
     data() {
         return {
             loginPopupState : 0,
-            userImage : "../assets/img_profile-default.svg",
-            userName : '',
-            stepInProgress : [],
-            stepComplete : [],
-            stepScrapped : [],
+            userImage : "",
+            userName : '최소영',
+            stepInProgress : {
+                stepWhich : 'HTML',
+                stepWhere : '튜토리얼',
+                stepWhen : '21.08.01'
+            },
+            stepComplete : {
+                stepWhich : 'CSS',
+                stepWhere : '튜토리얼',
+                stepWhen : '21.08.01'
+            },
+            stepScrapped : {
+                stepWhich : 'Javascript',
+                stepWhere : '튜토리얼',
+                stepWhen : '21.08.01'
+            },
             stepInProgressState : true,
             stepCompleteState : false,
             stepScrappedState  : false
+
         }
     },
-  created() {
-    axios
-        .get("http://3.36.131.138/memberInfo")
-        .then(res => {
-          this.userName = res.data.userId;
-          console.log(res.data.userId);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-    axios
-        .get("http://3.36.131.138/api/stageIng")
-        .then(res => {
-          this.stepInProgress = res.data;
-          console.log(res);
-          console.log(this.stepInProgress[0].userId);
-          console.log(this.stepInProgress[1].course);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-    axios
-        .get("http://3.36.131.138/api/stageFinish")
-        .then(res => {
-          this.stepComplete = res.data;
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-    axios
-        .get("http://3.36.131.138/api/scrap")
-        .then(res => {
-          this.stepScrapped = res.data;
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-    this.userImg();
-  },
-  methods : {
+    methods : {
         loginOpen() {
             this.loginPopupState = 1;
         },
         loginClose() {
             this.loginPopupState = 0;
-        },
-        imageUpload(){
-          var frm = new FormData();
-          var photoFile = document.getElementById("input-file");
-          frm.append("file", photoFile.files[0]);
-          axios
-          .post("http://3.36.131.138/api/userImg", frm, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          })
-          .then(res=>{
-            console.log(res);
-            this.userImg();
-          })
-          .catch(err=>{
-            console.log(err);
-          })
-        },
-      userImg(){
-        axios
-            .get("http://3.36.131.138/api/userImg")
-            .then(res=>{
-              console.log(res);
-              console.log(res.data);
-              if(res.data==null){
-                this.userImage="/home/ubuntu/images/53df9f25-6cc3-4a53-8ae7-771d594be0a5_캡처.JPG"
-              }else{
-                this.userImage = "/home/ubuntu/images" + res.data
-              }
-            })
-            .catch(err=>{
-              console.log(err);
-            })
-      },
+        }
     }
 }
 </script>

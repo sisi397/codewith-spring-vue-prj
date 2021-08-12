@@ -1,0 +1,11 @@
+<svg width="242" height="242" viewBox="0 0 242 242" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="121" cy="121" r="121" fill="#4C1993"/>
+    <path d="M103.714 145.848L118.299 186.362L92.9104 199.326L80.4863 151.79L103.714 145.848ZM103.714 145.848L107.495 101.013L132.343 67.5223L160.433 43.7544" stroke="#9F78F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="92.9104" cy="199.326" r="3.78125" fill="white" fill-opacity="0.47"/>
+    <circle cx="80.4863" cy="151.79" r="3.78125" fill="white" fill-opacity="0.47"/>
+    <circle cx="103.714" cy="145.848" r="3.78125" fill="white" fill-opacity="0.47"/>
+    <circle cx="107.495" cy="101.013" r="3.78125" fill="white" fill-opacity="0.47"/>
+    <circle cx="132.344" cy="67.5222" r="3.78125" fill="white" fill-opacity="0.47"/>
+    <circle cx="160.433" cy="43.7544" r="3.78125" fill="white" fill-opacity="0.47"/>
+    <circle cx="118.299" cy="186.362" r="3.78125" fill="white" fill-opacity="0.47"/>
+</svg>

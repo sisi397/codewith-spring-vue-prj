@@ -34,13 +34,12 @@ public class MemberController {
         if(!(session.isNew())){
             String userId = (String)(session.getAttribute("userId"));
             String name = (String)(session.getAttribute("name"));
-            //MemberDto memberDto = new MemberDto(userId,name);
-            MemberDto memberDto = new MemberDto("id","코드윗");
+            MemberDto memberDto = new MemberDto(userId,name);
             return memberDto;
         }else{
-            MemberDto memberDto = new MemberDto("id","코드윗");
-            return memberDto;
-            //return null;
+            //MemberDto memberDto = new MemberDto("id","코드윗");
+            //return memberDto;
+            return null;
         }
     }
 

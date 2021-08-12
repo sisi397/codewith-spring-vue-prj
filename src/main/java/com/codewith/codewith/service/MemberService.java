@@ -177,7 +177,7 @@ public class MemberService implements UserDetailsService {
                 );
                 System.out.println(body);
                 mimeMessageHelper.setText(body.toString(), true);
-                mimeMessageHelper.addInline("codewith", new FileDataSource("C:/springStudy/backend/src/frontend/src/assets/send_email.jpg"));
+                mimeMessageHelper.addInline("codewith", new FileDataSource("/home/ubuntu/images/send_email.jpg"));
                 javaMailSender.send(mimeMessage);
                 System.out.println("메일보내기 성공");
                 return true;

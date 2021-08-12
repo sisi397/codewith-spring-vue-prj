@@ -7,31 +7,35 @@
         <img class="hide-btn" @click="closeLoginPopup" src="../../assets/btn_close.svg" alt="">
       </div>
       <h4 class="popup-title">{{popup.popupTitle}}</h4>
-      <p class="guide-to-login">{{popup.popupInfo[popup.index]}}</p>
-        <div class="form-container">
+      <div class="form-container">
+        <p class="guide-to-login">{{popup.popupInfo[popup.index]}}</p>
+        <div class="login-form">
           <div class="user-inform">
             <!-- 아이디 -->
-            <input type="text" v-model="loginId" placeholder="아이디">
-            <div class="login-guide" v-if="idGuideDisplay == 1">아이디를 입력해주세요.</div>
+            <input class="form-value" type="text" v-model="formFirst.value" :placeholder="placeHolder[0]"> 
+            <div class="login-guide" v-if="idGuideDisplay == 1">{{placeHolder[0]}}를 입력해주세요.</div>
           </div>
           <div class="user-inform">
             <!-- 비밀번호 -->
-            <input type="password" v-model="loginPassword" placeholder="비밀번호">
-            <div class="login-guide" v-if="passwordGuideDisplay == 1">비밀번호를 입력해주세요.</div>
+            <input class="form-value" :type="formSecond.type" v-model="formSecond.value" :placeholder="placeHolder[1]">
+            <div class="login-guide" v-if="passwordGuideDisplay == 1">{{placeHolder[1]}}를 입력해주세요.</div>
           </div>
         </div>
-        <div class="signup-guide-container">
+        <!-- <p id="find-user-id" >가입 정보에 해당하는 아이디는 {{user.id}}입니다.</p> -->
+        <div class="signup-guide-container" v-if="popup.popupTitle == '로그인'">
           <span class="guide-to-signup">아직 회원이 아니세요?</span>
           <router-link to="/Signup" class="move-to-signup">회원가입</router-link>
         </div>
         <button type="submit"><img class="login-btn" src="../../assets/btn_login.svg" alt="btn_login"></button>
         <div class="find-container">
-          <span @click="findId" v-if="popup.popupSort == 'password' || popup.popupSort == 'login'">아이디 찾기</span>
+          <span @click="changeFindId" v-if="popup.popupSort == 'password' || popup.popupSort == 'login'">아이디 찾기</span>
           <span v-if="popup.popupSort == 'login'"> | </span>
-          <span @click="findPassword" v-if="popup.popupSort == 'id' || popup.popupSort == 'login'">비밀번호 찾기</span>
+          <span @click="changeFindPassword" v-if="popup.popupSort == 'id' || popup.popupSort == 'login'">비밀번호 찾기</span>
           <span v-if="popup.popupSort == 'id' || popup.popupSort == 'password'"> | </span>
           <span @click="backLogin" v-if="popup.popupSort == 'id' || popup.popupSort == 'password'">로그인</span>
         </div>
+      </div>  
+
   </form>
 </div>
 </template>
@@ -40,22 +44,36 @@
 import axios from "axios"
 export default {
     name : 'login-popup',
-    props : ['_loginPopupState', '_loginState'],
+    props : ['_loginPopupState', '_loginState', '_userName'],
     data() {
       return {
+        user : {
+          id : '',
+          name : ''
+        },
         popup : {
-          index : 0,
+          index : 0, //0 : 로그인, 1 : html, 2 : css
           popupTitle : '로그인',
           popupSort : 'login',
-          popupInfo : ['달력 만들기, 회원가입 창 만들기와 같은 실습을 통해 html, css, javascript을 무료로 학습하실 수 있습니다.', '', '가입정보를 입력하신 후 이메일 발송을 클릭하시면 임시비밀번호가 발송 됩니다.'],
+          popupInfo : ['다양한 실습을 통해 html, css, javascript을 무료로 학습하실 수 있습니다.', '가입정보를 입력하신 후 Find를 클릭하시면 아이디를 확인하실 수 있습니다.', '가입정보를 입력하신 후 Find를 클릭하시면 임시비밀번호가 발송 됩니다.'],
         },
+        //state
+        loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
         loginPopupState : this._loginPopupState,
-        loginId : '',
-        loginPassword : '',
+        // form 관련 data
+        placeHolder : ["아이디", "비밀번호"],
+        formFirst : {
+          type : '',
+          value : '',
+        },
+        formSecond : {
+          type : 'password',
+          value : ''
+        },
+        //빈 항목 체크 & 채우기 안내하는 메세지
         idGuideDisplay : 0, //1일 되면 아이디 입력 메세지 보여줌
         passwordGuideDisplay : 0, //1일 되면 비번 입력 메세지 보여줌
         loginNullcheck : true, //true : 아이디,비밀번호가 비어있음, false : 아이디, 비밀번호가 모두 입력됨(로그인 가능 상태)
-        loginState : 0 //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
       }
     },
     created() {
@@ -69,13 +87,14 @@ export default {
       },
       loginGuide() {
         console.log("loginGuide 함수 실행됨");
-        if (this.loginId == '' && this.loginPassword == '') {
+        this.loginNullcheck = true // loginNullcheck true로 초기화, 초기화를 하지 않을 경우 한 번 false로 바뀌면 계속 유지됨
+        if (this.formFirst.value == '' && this.formSecond.value == '') {
           this.idGuideDisplay = 1;
           this.passwordGuideDisplay = 1;
-        } else if(this.loginId == '') {
+        } else if(this.formFirst.value == '') {
           this.idGuideDisplay = 1;
           this.passwordGuideDisplay = 0;
-        } else if(this.loginPassword == '') {
+        } else if(this.formSecond.value == '') {
           this.idGuideDisplay = 0;
           this.passwordGuideDisplay = 1;
         } else { // 아이디, 비밀번호가 모두 입력된 상태인 경우
@@ -87,12 +106,28 @@ export default {
       },
       onSubmit() {
         console.log("onsubmit 함수 실행됨");
-        this.loginGuide();
+        this.loginGuide(); //비어있는 항목 체크 후 안내 메세지
+        if (this.popup.index === 0) {
+          this.tryLogin();
+        } else if (this.popup.index === 1) {
+          this.findId();
+        } else {
+          this.findPass();
+        }
+      },
+      formInit() {
+        console.log("formInit 수행됨");
+        document.getElementsByClassName("form-value").value = "";
+        document.getElementsByClassName("form-value").value = "";
+        this.formFirst.value = '';
+        this.formSecond.value = '';
+      },
+      tryLogin() {
         if (this.loginNullcheck == false) {
           axios
           .post('http://3.36.131.138/api/login', {
-            userId : this.loginId,
-            password : this.loginPassword
+            userId : this.formFirst.value,
+            password : this.formSecond.value
           })
           .then(res => { //로그인 성공
             console.log(res);
@@ -101,44 +136,95 @@ export default {
               this.completeLogin();
             }else{
               alert("아이디 또는 비밀번호가 틀렸습니다.");
+              this.formInit(); //form 입력창 초기화
             }
           })
           .catch(err => {
-              console.log(err);
+              console.log(err.response);
           })
         }
+      },
+      completeLogin() { //로그인 성공
+        this.loginState = 1
+        this.userInfo();
       },
       userInfo() {
         console.log("userInfo 함수를 수행합니다.");
         axios
         .get("http://3.36.131.138/memberInfo")
         .then(res => {
-          console.log(res.data.userId);
-          console.log(res.data.name);
+          console.log(res.data);
+          localStorage.setItem('loginState', JSON.stringify(this.loginState));
+          this.$emit('_completeLogin', this.loginState, res.data.name)
+          console.log(res);
+          this.$emit('_completeLogin', this.loginState, res.data.userId)
         })
         .catch(err => {
           console.log(err);
         })
       },
-      completeLogin() {
-        this.loginState = 1
-        this.$emit('_completeLogin', this.loginState)
-        this.userInfo();
-      },
       findId() {
+        console.log("아이디 찾기 함수 실행/ 이메일 : ", this.formFirst.value , ", 이름 : " + this.formSecond.value );
+        axios
+        .post('http://3.36.131.138/api/idFind', {
+          name : this.formSecond.value,
+          email : this.formFirst.value,
+        })
+        .then(res => {
+          console.log(res);
+          this.user.id = res.data
+          alert("가입정보에 해당하는 아이디는 " + this.user.id + "입니다.")
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        this.formInit(); //form 입력창 초기화
+      },
+      findPass() {
+        console.log("비밀번호 찾기 함수 실행");
+        axios
+        .put('http://3.36.131.138/api/passFind', {
+          userId : this.formSecond.value,
+          email : this.formFirst.value,
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data == true) {
+            alert("이메일로 임시 비밀번호를 발송하였습니다.")
+          }else {
+            alert("비밀번호 찾기에 실패하였습니다. 이메일과 아이디를 확인해주세요.")
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        this.formInit(); //form 입력창 초기화
+      },
+
+      // 아이디, 비밀번호 찾기 관련
+      changeFindId() {
         this.popup.index = 1
         this.popup.popupTitle = '아이디 찾기';
         this.popup.popupSort = 'id'
+        this.placeHolder = ['이메일', '이름']
+        this.formInit(); // form 입력창 초기화
+        this.formSecond.type = 'text'; //이름을 입력할 수 있는 텍스트 칸으로 변경
       },
-      findPassword() {
+      changeFindPassword() {
         this.popup.index = 2
         this.popup.popupTitle = '비밀번호 찾기';
         this.popup.popupSort = 'password'
+        this.placeHolder = ['이메일', '아이디']
+        this.formInit(); // form 입력창 초기화
+        this.formSecond.type = 'text'; //아이디을 입력할 수 있는 텍스트 칸으로 변경
       },
       backLogin() {
         this.popup.index = 0
         this.popup.popupTitle = '로그인';
         this.popup.popupSort = 'login'
+        this.placeHolder = ['아이디', '비밀번호']
+        this.formInit(); // form 입력창 초기화
+        this.formSecond.type = 'password'; //비밀번호를 입력하는 암호 칸으로 변경
       }
     }
   }
@@ -164,18 +250,15 @@ export default {
 }
 #login-popup .login-popup-content {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   align-items: center;
-  width: 800px; height: 500px;
+  width: 700px; height: 450px;
   background: white;
   border-radius: 20px;
   margin: auto;
   padding: 0px 50px;
 }
 #login-popup .popup-title {
-  display: flex;
-  justify-content: center;
   width: 100%;
   padding: 20px 0px;
   border-bottom: 2px solid rgba(138, 101, 242, 0.44);
@@ -197,28 +280,35 @@ export default {
   width: 12px; height: 12px;
   margin: auto;
 }
+#login-popup .login-popup-content .form-container {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
 #login-popup .guide-to-login {
-  margin-top: 30px;
+  width: 100%;
+  margin: 0;
   font-size: 14px;
   color: #606060;
 }
-
-#login-popup .form-container{
-  display: flex;
-  flex-direction: column;
+#login-popup .login-form{
+  display: flex; flex-direction: column;
   gap: 20px;
   width: 350px;
+  margin: 40px 0;
 }
-#login-popup .form-container p{
+#login-popup .login-form p{
   float: left;
   margin-left: 25px;
 }
-#login-popup .form-container input{
+#login-popup .login-form input{
   width: 100%; height: 35px;
   border: 1px solid #C4C4C4;
   border-radius: 10px;
 }
-#login-popup .form-container .login-guide {
+#login-popup .login-form .login-guide {
   display: block;
   float: left;
   margin: 5px 0 0 10px;
@@ -226,7 +316,7 @@ export default {
   font-size: 12px;
 }
 .signup-guide-container {
-  margin-top: 40px;
+  margin-bottom: 20px;
 }
 .guide-to-signup {
   color: #606060;
@@ -238,13 +328,16 @@ export default {
   font-weight: 700;
   cursor: pointer;
 }
+#find-user-id {
+  width: 100%;
+
+}
 .login-btn {
-  margin-top: 20px;
   cursor: pointer;
 }
 .find-container {
   font-size: 14px;
-  margin: 15px 0 35px;
+  margin-top: 15px;
 }
 .find-container span {
   margin: 0 5px;
