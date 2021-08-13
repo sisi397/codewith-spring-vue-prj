@@ -29,7 +29,6 @@ public class MemberController {
     public MemberDto get(HttpServletRequest request){
         HttpSession session = request.getSession();
         System.out.println(session.isNew());
-        System.out.println((String)(session.getAttribute("userId")));
 
         if(!(session.isNew())){
             String userId = (String)(session.getAttribute("userId"));

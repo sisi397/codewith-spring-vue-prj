@@ -12,7 +12,7 @@
         <div class="login-form">
           <div class="user-inform">
             <!-- 아이디 -->
-            <input class="form-value" type="text" v-model="formFirst.value" :placeholder="placeHolder[0]"> 
+            <input class="form-value" :type="formFirst.type" v-model="formFirst.value" :placeholder="placeHolder[0]"> 
             <div class="login-guide" v-if="idGuideDisplay == 1">{{placeHolder[0]}}를 입력해주세요.</div>
           </div>
           <div class="user-inform">
@@ -26,7 +26,8 @@
           <span class="guide-to-signup">아직 회원이 아니세요?</span>
           <router-link to="/Signup" class="move-to-signup">회원가입</router-link>
         </div>
-        <button type="submit"><img class="login-btn" src="../../assets/btn_login.svg" alt="btn_login"></button>
+        <button type="submit"><img class="login-btn" v-if="popup.popupSort == 'login'" src="../../assets/btn_login.svg" alt="btn_login"></button>
+        <button type="submit"><img class="login-btn" v-if="popup.popupSort == 'id' || popup.popupSort == 'password'" src="../../assets/btn_find.svg" alt="btn_login"></button>
         <div class="find-container">
           <span @click="changeFindId" v-if="popup.popupSort == 'password' || popup.popupSort == 'login'">아이디 찾기</span>
           <span v-if="popup.popupSort == 'login'"> | </span>
@@ -42,6 +43,7 @@
 
 <script>
 import axios from "axios"
+
 export default {
     name : 'login-popup',
     props : ['_loginPopupState', '_loginState', '_userName'],
@@ -52,7 +54,7 @@ export default {
           name : ''
         },
         popup : {
-          index : 0, //0 : 로그인, 1 : html, 2 : css
+          index : 0, //0 : 로그인, 1 : html, 2 : css : 3
           popupTitle : '로그인',
           popupSort : 'login',
           popupInfo : ['다양한 실습을 통해 html, css, javascript을 무료로 학습하실 수 있습니다.', '가입정보를 입력하신 후 Find를 클릭하시면 아이디를 확인하실 수 있습니다.', '가입정보를 입력하신 후 Find를 클릭하시면 임시비밀번호가 발송 됩니다.'],
@@ -73,7 +75,7 @@ export default {
         //빈 항목 체크 & 채우기 안내하는 메세지
         idGuideDisplay : 0, //1일 되면 아이디 입력 메세지 보여줌
         passwordGuideDisplay : 0, //1일 되면 비번 입력 메세지 보여줌
-        loginNullcheck : true, //true : 아이디,비밀번호가 비어있음, false : 아이디, 비밀번호가 모두 입력됨(로그인 가능 상태)
+        nullcheck : 0, //0 : 아이디,비밀번호가 비어있음, 1 : 아이디, 비밀번호가 모두 입력됨(로그인 가능 상태)
       }
     },
     created() {
@@ -85,9 +87,8 @@ export default {
         this.loginPopupState = 0;
         this.$emit('_loginClose');
       },
-      loginGuide() {
-        console.log("loginGuide 함수 실행됨");
-        this.loginNullcheck = true // loginNullcheck true로 초기화, 초기화를 하지 않을 경우 한 번 false로 바뀌면 계속 유지됨
+      formNullCheck() {
+        this.nullcheck = 0 // nullcheck true로 초기화, 초기화를 하지 않을 경우 한 번 1로 바뀌면 계속 유지됨
         if (this.formFirst.value == '' && this.formSecond.value == '') {
           this.idGuideDisplay = 1;
           this.passwordGuideDisplay = 1;
@@ -101,12 +102,11 @@ export default {
           console.log("아아디, 비밀번호 모두 입력됨");
           this.idGuideDisplay = 0;
           this.passwordGuideDisplay = 0;
-          this.loginNullcheck = false
+          this.nullcheck = 1
         }
       },
       onSubmit() {
-        console.log("onsubmit 함수 실행됨");
-        this.loginGuide(); //비어있는 항목 체크 후 안내 메세지
+        this.formNullCheck(); //비어있는 항목 체크 후 안내 메세지
         if (this.popup.index === 0) {
           this.tryLogin();
         } else if (this.popup.index === 1) {
@@ -116,21 +116,19 @@ export default {
         }
       },
       formInit() {
-        console.log("formInit 수행됨");
         document.getElementsByClassName("form-value").value = "";
         document.getElementsByClassName("form-value").value = "";
         this.formFirst.value = '';
         this.formSecond.value = '';
       },
       tryLogin() {
-        if (this.loginNullcheck == false) {
+        if (this.nullcheck == 1) {
           axios
           .post('http://3.36.131.138/api/login', {
             userId : this.formFirst.value,
             password : this.formSecond.value
           })
           .then(res => { //로그인 성공
-            console.log(res);
             if(res.data){
               this.closeLoginPopup();
               this.completeLogin();
@@ -153,52 +151,57 @@ export default {
         axios
         .get("http://3.36.131.138/memberInfo")
         .then(res => {
-          console.log(res.data);
-          localStorage.setItem('loginState', JSON.stringify(this.loginState));
-          this.$emit('_completeLogin', this.loginState, res.data.name)
           console.log(res);
-          this.$emit('_completeLogin', this.loginState, res.data.userId)
+          localStorage.setItem('loginState', JSON.stringify(this.loginState));
+          localStorage.setItem('userName', res.data + '님');
+          this.$emit('_completeLogin')
         })
         .catch(err => {
           console.log(err);
         })
       },
       findId() {
-        console.log("아이디 찾기 함수 실행/ 이메일 : ", this.formFirst.value , ", 이름 : " + this.formSecond.value );
-        axios
-        .post('http://3.36.131.138/api/idFind', {
-          name : this.formSecond.value,
-          email : this.formFirst.value,
-        })
-        .then(res => {
-          console.log(res);
-          this.user.id = res.data
-          alert("가입정보에 해당하는 아이디는 " + this.user.id + "입니다.")
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        this.formInit(); //form 입력창 초기화
+        if (this.nullcheck == 1) {          
+          axios
+          .post('http://3.36.131.138/api/idFind', {
+            name : this.formSecond.value,
+            email : this.formFirst.value,
+          })
+          .then(res => {
+            console.log(res);
+            this.user.id = res.data
+            this.formInit(); //form 입력창 초기화
+            if (res.data != "") {
+              alert("가입정보에 해당하는 아이디는 " + this.user.id + "입니다.")
+            } else {
+              alert("아이디 찾기에 실패하였습니다. 이메일과 이름을 확인해주세요.")
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        }
       },
       findPass() {
-        console.log("비밀번호 찾기 함수 실행");
-        axios
-        .put('http://3.36.131.138/api/passFind', {
-          userId : this.formSecond.value,
-          email : this.formFirst.value,
-        })
-        .then(res => {
-          console.log(res);
-          if (res.data == true) {
-            alert("이메일로 임시 비밀번호를 발송하였습니다.")
-          }else {
-            alert("비밀번호 찾기에 실패하였습니다. 이메일과 아이디를 확인해주세요.")
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        this.formInit(); //form 입력창 초기화
+        if (this.nullcheck == 1) {
+          axios
+          .put('http://3.36.131.138/api/passFind', {
+            userId : this.formSecond.value,
+            email : this.formFirst.value,
+          })
+          .then(res => {
+            console.log(res);
+            if (res.data) {
+              alert("이메일로 임시 비밀번호를 발송하였습니다.")
+              this.formInit(); //form 입력창 초기화
+            }else {
+              alert("비밀번호 찾기에 실패하였습니다. 이메일과 아이디를 확인해주세요.")
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        }
       },
 
       // 아이디, 비밀번호 찾기 관련
@@ -208,6 +211,7 @@ export default {
         this.popup.popupSort = 'id'
         this.placeHolder = ['이메일', '이름']
         this.formInit(); // form 입력창 초기화
+        this.formFirst.type = 'email'; //메일양식을 확인하는 메일 칸으로 변경
         this.formSecond.type = 'text'; //이름을 입력할 수 있는 텍스트 칸으로 변경
       },
       changeFindPassword() {
@@ -216,6 +220,7 @@ export default {
         this.popup.popupSort = 'password'
         this.placeHolder = ['이메일', '아이디']
         this.formInit(); // form 입력창 초기화
+        this.formFirst.type = 'email'; //메일양식을 확인하는 메일 칸으로 변경
         this.formSecond.type = 'text'; //아이디을 입력할 수 있는 텍스트 칸으로 변경
       },
       backLogin() {
@@ -224,6 +229,7 @@ export default {
         this.popup.popupSort = 'login'
         this.placeHolder = ['아이디', '비밀번호']
         this.formInit(); // form 입력창 초기화
+        this.formFirst.type = 'text'; //메일양식을 확인하는 메일 칸으로 변경
         this.formSecond.type = 'password'; //비밀번호를 입력하는 암호 칸으로 변경
       }
     }
@@ -290,7 +296,7 @@ export default {
 #login-popup .guide-to-login {
   width: 100%;
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   color: #606060;
 }
 #login-popup .login-form{

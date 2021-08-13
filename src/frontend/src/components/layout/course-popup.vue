@@ -27,10 +27,14 @@
         <button class="tutorial-step">회원가입 창 만들기</button>
       </div>
     </div>
-    <!-- 이어하기 버튼 -->
-    <router-link :to="{name : 'Training', params : {course : this.selectCourseData.course, stage : this.selectCourseData.stage}}">
+    <!-- 이어하기 버튼(for 로그인한 유저)-->
+    <router-link v-if="loginState == 1" :to="{name : 'Training', params : {_course : this.selectCourseData.course, _stage : this.selectCourseData.stage}}">
       <img class="continue-btn" @click="continueCourse" src="../../assets/btn_continue.svg" alt="continue-btn">
     </router-link>
+    <!-- 이어하기 버튼 -->
+    <button v-if="loginState == 0">
+      <img class="continue-btn" @click="continueCourse" src="../../assets/btn_continue.svg" alt="continue-btn">
+    </button>
     <!-- 처음부터 진행 버튼 -->
     <router-link :to="{name : 'Training', params : {_course : this.selectCourseData.course, _stage : this.selectCourseData.stage}}">
       <p class="start-first" @click="startCourse">처음부터 진행하기</p>
@@ -47,15 +51,20 @@ export default {
     props : ['_selectCourse', '_userName'],
     data() {
         return {
+          loginState : 0,
           selectWindow : this._selectWindow,
           windowTitle : ['HTML', 'CSS', 'JavaScript'],
           selectCourseNumber : 1, // html : 1, css : 2, javascript : 3
           selectCourseData : {
-            userId: "",
-            course: 0,
+            userId: '',
+            course: this._selectCourse,
             stage: 0,
           }
         }
+    },
+    created() {
+      this.loginState = JSON.parse(localStorage.getItem('loginState'));
+      console.log(this.loginState);
     },
     methods : {
         closeCoursePopup() {
@@ -63,28 +72,33 @@ export default {
           this.$emit('_courseClose')
         },
         continueCourse() {
-          axios
-          .get("http://3.36.131.138/api/stageIng/" + this._selectCourse)
-          .then(res => {
-            console.log(res);
-            this.selectCourseData.userId = res.data.userId;
-            this.selectCourseData.course = res.data.course;
-            this.selectCourseData.stage = res.data.stage;
-            console.log(this.selectCourseData);
-
-            this.emitter.emit("_continueCourse", this.selectCourseData);
-          })
-          .catch(err => {
-            console.log(err);
-          })
+          if (this.loginState == 1) {            
+            axios
+            .get("http://3.36.131.138/api/stageIng/" + this._selectCourse)
+            .then(res => {
+              console.log(res);
+              this.selectCourseData.userId = res.data.userId;
+              this.selectCourseData.course = res.data.course;
+              this.selectCourseData.stage = res.data.stage;
+              console.log(this.selectCourseData);
+              this.$router.push('Training');
+            })
+            .catch(err => {
+              console.log(err);
+            })
+          }else {
+            if (confirm("로그인이 필요한 메뉴입니다. 로그인 창으로 이동하시겠습니까?")) {
+              console.log();
+              this.closeCoursePopup();
+              this.$emit('_loginOpen');
+            }
+          }
         },
         startCourse() {
           this.selectCourseData.userId = this._userName;
           this.selectCourseData.course = this._selectCourse;
           this.selectCourseData.stage = 1;
           console.log(this.selectCourseData);
-
-          this.emitter.emit("_startCourse", this.selectCourseData);
         }
     }
 }
@@ -146,6 +160,7 @@ export default {
 .guide-to-start {
   color: #606060;
   margin-top: 30px;
+  font-size: 16px;
 }
 .tutorial-container {
   display: flex;
@@ -168,6 +183,7 @@ export default {
   border: 1px solid #BDBDBD;
   border-radius: 10px;
   padding: 0px 10px;
+  font-size: 13px;
 }
 .continue-btn {
   margin-top: 60px;
