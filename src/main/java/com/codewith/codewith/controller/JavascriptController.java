@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class JavascriptController {
     private final JavascriptCodeReopository javascriptCodeReopository;
 
-    @GetMapping("/api/javascript/{stage}")
+    @GetMapping("/api/3/{stage}")
     public JavascriptCode getJavaScriptCode(@PathVariable int stage){
         return javascriptCodeReopository.findByStage(stage).orElseThrow(
                 () -> new IllegalArgumentException("페이지가 존재하지 않습니다.")

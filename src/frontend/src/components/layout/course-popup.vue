@@ -179,21 +179,23 @@ export default {
   margin: auto;
 }
 .tutorial-container .tutorial .tutorial-step {
+  width: 100%;
   height: 30px;
   border: 1px solid #BDBDBD;
   border-radius: 10px;
-  padding: 0px 10px;
-  font-size: 13px;
+  font-size: 12.5px;
 }
 .continue-btn {
   margin-top: 60px;
   cursor: pointer;
 }
 .start-first {
-  width: 120px;
+  width: 130px;
   color: #656565;
   border-bottom: 1px solid #848484;
   margin: 10px auto;
+  padding-bottom: 5px;
   cursor: pointer;
+  font-size: 15px
 }
 </style>

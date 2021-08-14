@@ -14,7 +14,7 @@ public class HtmlController {
     private final HtmlCodeRepository htmlcodeRepository;
     private final HtmlCodeService htmlCodeService;
 
-    @GetMapping("/api/html/{stage}")
+    @GetMapping("/api/1/{stage}")
     public HtmlCode getHtmlCode(@PathVariable int stage){
         return htmlcodeRepository.findByStage(stage).orElseThrow(
                 () -> new IllegalArgumentException("페이지가 존재하지 않습니다.")

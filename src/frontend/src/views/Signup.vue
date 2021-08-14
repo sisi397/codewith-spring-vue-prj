@@ -9,45 +9,26 @@
             v-if="loginPopupState == 1" 
             :_loginPopupState = "loginPopupState"
             @_loginClose = "loginClose"
+            @_completeLogin = "changeLoginState"
         ></LoginPopup>
         <HeaderLight
             :_loginPopupState = "loginPopupState"
             @_loginOpen = "loginOpen"
         ></HeaderLight>
-        <div class="signup-container">
-            <!-- <div class="form-container">
-                <p>이름</p>
-                <input v-model="signupForm.signupName" type="text">
-                <p>아이디</p>
-                <input v-model="signupForm.signupId" type="text">
-                <p>이메일</p>
-                <input v-model="signupForm.signupEmail" type="text">
-                <p>비밀번호</p>
-                <input v-model="signupForm.signupPassword" type="password">
-                <p>비밀번호 확인</p>
-                <input v-model="signupPasswordConfirm" type="password">
-                <p class="signup-guide" v-if="signupPasswordGuideDisplay == 1">입력한 비밀번호와 일치하지 않습니다.</p>
-            </div> -->
-            <form class="form-container" @submit.prevent="onSubmit">
-                <p>이름</p>
-                <input type="text" name="name" v-model="signupForm.signupName">
-                <p>아이디</p>
-                <input type="text" name="id" v-model="signupForm.signupId">
-                <p>이메일</p>
-                <input type="email" name="email" v-model="signupForm.signupEmail">
-                <p>비밀번호</p>
-                <input type="password" name="password" v-model="signupForm.signupPassword">
-                <p>비밀번호 확인</p>
-                <input type="password" v-model="signupPasswordConfirm">
-                <p class="signup-guide" v-if="signupPasswordGuideDisplay == 1">입력한 비밀번호와 일치하지 않습니다.</p>
-                <button type="submit"><img class="signup-btn" src="../assets/btn_signup.svg" alt=""></button>
-            </form>
-            <!-- <img class="signup-btn" @click="signupConfirm" src="../assets/btn_signup.svg" alt=""> -->
-            <div class="login-guide-container">
-                <span class="guide-to-login">이미 계정이 있으세요?</span>
-                <button class="move-to-login">로그인</button>
-            </div>
-        </div>
+        <form class="form-container" @submit.prevent="onSubmit">
+            <p>이름</p>
+            <input type="text" name="name" v-model="signupForm.signupName">
+            <p>아이디</p>
+            <input type="text" name="id" v-model="signupForm.signupId">
+            <p>이메일</p>
+            <input type="email" name="email" v-model="signupForm.signupEmail">
+            <p>비밀번호</p>
+            <input type="password" name="password" v-model="signupForm.signupPassword">
+            <p>비밀번호 확인</p>
+            <input type="password" v-model="signupPasswordConfirm">
+            <p class="signup-guide" v-if="signupPasswordGuideDisplay == 1">입력한 비밀번호와 일치하지 않습니다.</p>
+            <button type="submit"><img class="signup-btn" src="../assets/btn_signup.svg" alt=""></button>
+        </form>
     </div>
 </template>
 
@@ -128,6 +109,9 @@ export default {
             .catch(err => {
                 console.log(err);
             })
+        },
+        changeLoginState() {
+            this.$router.push({name : 'Home'}); //로그인 또는 로그아웃 완료 후에는 홈으로
         }
     }
 }
@@ -135,6 +119,7 @@ export default {
 
 <style>
 #signup {
+    height: 100%;
     padding: 20px;
 }
 input {
@@ -143,17 +128,13 @@ input {
 #signup form {
     overflow: hidden;
 }
-.signup-container {
+.form-container{
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: 350px;
+    height: calc(100% - 86px);
     margin: auto;
-}
-.form-container{
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
 }
 .form-container p{
   align-self: flex-start;
@@ -178,23 +159,5 @@ input {
     width: 350px;
     margin-top: 45px;
     cursor: pointer;
-}
-.login-guide-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 15px;
-}
-#signup .login-guide-container .guide-to-login {
-    margin: 0px;
-    color: #606060;
-}
-#signup .move-to-login {
-  display: inline-block;
-  margin-left: 5px;
-  color: #765FD7;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
 }
 </style>

@@ -8,6 +8,7 @@
         <HeaderLight
             :_loginPopupState = "loginPopupState"
             @_loginOpen = "loginOpen"
+            @_logout = "changeLoginState"
         ></HeaderLight>
         <body>
             <div class="left-section-mypage">
@@ -129,6 +130,9 @@ export default {
         },
         loginClose() {
             this.loginPopupState = 0;
+        },
+        changeLoginState() {
+            this.$router.push({name : 'Home'}); //로그인 또는 로그아웃 완료 후에는 홈으로
         }
     }
 }

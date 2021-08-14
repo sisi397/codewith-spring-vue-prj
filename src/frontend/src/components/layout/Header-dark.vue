@@ -5,19 +5,23 @@
             <img id="logo-img" src="../../assets/main-page-logo.svg" alt="">
         </div>
         <div class="nav-menu">
-            <router-link class="menu" to="/Signup">Sign up</router-link>
-            <img class="nav-menu-division" src="../../assets/nav-menu-division.svg" alt="">
+            <router-link class="menu" v-if="_loginState == 0" :to="{name : 'Signup'}">Sign up</router-link>
+            <img class="nav-menu-division" v-if="_loginState == 0" src="../../assets/nav-menu-division.svg" alt="">
             <button class="menu" @click="openLoginPopup" v-if="_loginState == 0">Login</button>
             <button class="menu" @click="logout" v-if="_loginState == 1">Logout</button>
             <img class="nav-menu-division" v-if="_loginState == 1" src="../../assets/nav-menu-division.svg" alt="">
             <!-- 로그인이 된 경우 마이페이지로 이동 -->
-            <router-link class="menu" to="/Mypage" v-if="_loginState == 1">My page</router-link>
+            <router-link class="menu" :to="{name : 'Mypage'}" v-if="_loginState == 1">My page</router-link>
         </div>
-        <button class="nav-hamburger-menu" @click="openNavMenuPopup" type="button"><img src="../../assets/btn_hamburger.svg" alt=""></button>
+        <button class="nav-menu-open" v-if="navMenuPopupState == 0" @click="openNavMenuPopup" type="button"><img src="../../assets/btn_hamburger.svg" alt=""></button>
+        <button class="nav-menu-close" v-if="navMenuPopupState == 1" @click="closeNavMenuPopup" type="button"><img src="../../assets/btn_x.svg" alt=""></button>
         <NavMenuPopup
             class="navMenuPopup"
+            v-if="navMenuPopupState == 1"
+            :navMenuPopupState = "navMenuPopupState"
+            @_loginOpen = "openLoginPopup"
+            @_logout = "logout"
             >
-            <!-- v-if="navMenuPopupState == 1" -->
         </NavMenuPopup>     
     </div>
 
@@ -35,29 +39,26 @@ export default {
     },
     data() {
         return {
-            navMenuPopupState : 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
+            navMenuPopupState : 0, //0은 메뉴 팝업이 닫힌 상태, 1은 팝업이 열린 상태
         }
     },
     methods : {
         openLoginPopup() {
+            this.navMenuPopupState = 0;
             this.loginPopupState = 1;
             this.$emit('_loginOpen');
         },
         openNavMenuPopup() {
-            if (this.navMenuPopupState == 0) {
-                console.log("nav-menu 창 띄움");
-                this.navMenuPopupState = 1;
-            } else {
-                console.log("nav-menu 창 끔");
-                this.navMenuPopupState = 0;
-            }
+            this.navMenuPopupState = 1;
+        },
+        closeNavMenuPopup() {
+            this.navMenuPopupState = 0;
         },
         logout() {
             if (confirm("Logout 하시겠습니까?")) {
                 axios
                 .delete('http://3.36.131.138/api/logout')
                 .then(() => {
-                    console.log("로그아웃 되었습니다.");
                     localStorage.setItem('loginState', JSON.stringify(0)); //loginState 0으로 초기화 후 로컬스토리지에 다시 저장
                     localStorage.setItem('userName', 'Welcome');
                     this.$emit('_logout');
@@ -120,27 +121,34 @@ button {
 .nav-menu .nav-menu-division {
     margin: 0px 14px;
 }
-.nav-hamburger-menu {
+#header .nav-menu-open {
+    display: none;
+}
+#header .nav-menu-close {
     display: none;
 }
 #header .navMenuPopup {
     display: none;
 }
-@media screen and (max-width : 1040px) {
+@media screen and (max-width : 700px) {
+    #header .navMenuPopup {
+        display: flex;
+    }
     #header .nav-menu {
         display: none;
     }
-    #header .nav-hamburger-menu {
+    #header .nav-menu-open {
         display: block;
         width: 28px; height: 28px;
         padding: 0px;
     }
-    #header .nav-hamburger-menu img{
-        width: 100%;
+    #header .nav-menu-close {
+        display: block;
+        width: 24px; height: 24px;
+        padding: 0px;
     }
-    #header .navMenuPopup {
-        display: flex;
-        flex-direction: column;
+    #header .nav-menu-open img{
+        width: 100%;
     }
 }
 </style>

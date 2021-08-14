@@ -153,7 +153,7 @@ export default {
         .then(res => {
           console.log(res);
           localStorage.setItem('loginState', JSON.stringify(this.loginState));
-          localStorage.setItem('userName', res.data + '님');
+          localStorage.setItem('userName', res.data.name + '님');
           this.$emit('_completeLogin')
         })
         .catch(err => {
@@ -348,5 +348,10 @@ export default {
 .find-container span {
   margin: 0 5px;
   cursor: pointer;
+}
+@media screen and (max-width : 700px) {
+  #login-popup .login-popup-content {
+    width : 600px
+  }
 }
 </style>

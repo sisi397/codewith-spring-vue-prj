@@ -55,7 +55,7 @@ img {
     }
 }
 
-@media screen and (max-width : 1040px) {
+@media screen and (max-width : 1000px) {
   img {
       display: none;
   }
