@@ -1,11 +1,16 @@
 <template>
   <!--html에서는 띄어쓰기 하지 말기-->
   <div id="training">
+    <LoginPopup
+        v-if="loginPopupState == 1" 
+        :_loginPopupState = "loginPopupState"
+        @_loginClose="loginClose"
+    ></LoginPopup>
     <section class="left-section">
       <div class="left-header">
         <router-link class="title-btn" :to="{ name: 'Home' }">CodeWith</router-link>
         <div class="explain-answer">
-          <button type="button" @click="modale = true" class="explain-btn">
+          <button type="button" @click="modaleStateChange" class="explain-btn">
             설명 다시보기
             <img src="../assets/triangular.svg" class="triangle" alt="설명 다시보기 버튼"/>
           </button>
@@ -18,33 +23,36 @@
             <button type="button" class="x-btn" @click="showAnswer = false">
               X
             </button>
-            <p>{{ answerCode[0] }}</p>
+            <img v-if="selectCourseData.course == 1" :src="answerImgHtml[selectCourseData.stage-1]">
+            <img v-if="selectCourseData.course == 2" :src="answerImgCss[selectCourseData.stage-1]">
+            <img v-if="selectCourseData.course == 3" :src="answerImgJs[selectCourseData.stage-1]">
           </div>
         </div>
       </div>
-      <img class="bookmark" src="../assets/bookmark-regular.svg" @click="bookmarkState = true" v-if="bookmarkState === false"> 
-      <img class="bookmark" src="../assets/bookmark-solid.svg" @click="bookmarkState = false" v-if="bookmarkState === true">
+      <img class="bookmark" src="../assets/bookmark-regular.svg" @click="saveScrap()" v-if="bookmarkState === false"> 
+      <img class="bookmark" src="../assets/bookmark-solid.svg" @click="deleteScrap()" v-if="bookmarkState === true">
       <!--북마크 체크되어있을때 true, 아니면 false-->
       <!-- 코드 에디터 부분 -->
       <div id="code-editor">
-          <p class="codepen" data-height="100%" data-theme-id="39664" data-default-tab="html,result" data-slug-hash="21881c03a017142cf6350cb206ac74f2" data-editable="true" data-user="futuredevsy" style="box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
-          <span>새로고침 해주세요.</span>
-          </p>
+          <codeEditorHtml name="codeEditorHtml" v-if="selectCourseData.course == 1"></codeEditorHtml>
+          <codeEditorHtml v-if="selectCourseData.course == undefined "></codeEditorHtml>
+          <codeEditorCss v-if="selectCourseData.course == 2"></codeEditorCss>
+          <codeEditorJavascript v-if="selectCourseData.course== 3"></codeEditorJavascript>    
       </div>
-
+      
       <footer>
         <div class="form-buttons">
-          <button type="submit" class="submit">완성했어요</button>
-          <button type="button" class="reset">초기화</button>
+          <button type="submit" class="submit" @click="onComplete()">완성했어요</button>
+          <button type="button" class="reset" @click="reload">초기화</button>
         </div>
         <div class="page-buttons">
-          <button type="button" class="prev-page">
+          <button type="button" class="prev-page" @click="pageBefore">
             <img
               src="../assets/chevron-left-solid.svg"
               alt="go to the page before"
             />
           </button>
-          <button type="button" class="next-page">
+          <button type="button" class="next-page" @click="pageNext">
             <img
               src="../assets/chevron-right-solid.svg"
               alt="go to the next page"
@@ -57,20 +65,18 @@
       <nav>
         <div class="log-btn">
           <!--로그인 하지 않았을 경우 보임-->
-          <button type="button" class="login-btn" v-if="loginState == false">
+          <button type="button" class="login-btn" v-if="login.loginState == 0" @click="loginPopupState = 1">
             Login
           </button>
-          <button type="button" class="sign-up-btn" v-if="loginState == false">
-            Sign-up
-          </button>
+          <router-link class="sign-up-btn" v-if="login.loginState == 0" :to="{ name: 'Signup' }" @click="$router.push({name: 'Signup'})">Sign-Up</router-link>
+
         </div>
-        <div>
-          <!--로그인 했을 경우 보임-->
+        <div><!--로그인 했을 경우 보임-->
           <button type="button">
-            <router-link class="mypage-btn" v-if="loginState == true" :to="{ name: 'Mypage' }" @click="$router.push({name: 'Mypage'})">Mypage</router-link>
+            <router-link class="mypage-btn" v-if="login.loginState == 1" :to="{ name: 'Mypage' }" @click="$router.push({name: 'Mypage'})">Mypage</router-link>
           </button>
         </div>
-        <h3>HTML Step.{{ stepNum[0] }} {{ stepName[0] }}</h3>
+        <h3>{{ courseName[selectCourseData.course-1] }} Step.{{ stepName[selectCourseData.stage-1] }}</h3>
       </nav>
       <div class="goal">
         <button type="button" class="goal-btn" @click="goalBtnState = true">
@@ -86,7 +92,11 @@
         <button type="button" class="x-btn" @click="goalBtnState = false">
           X
         </button>
-        <div class="complete-p">{{ complete[0] }}</div>
+        <div class="complete-img">
+          <img v-if="selectCourseData.course == 1" :src="completeImgHtml[selectCourseData.stage-1]">
+          <img v-if="selectCourseData.course == 2" :src="completeImgCss[selectCourseData.stage-1]">
+          <img v-if="selectCourseData.course == 3" :src="completeImgJs[selectCourseData.stage-1]">
+        </div>
       </div>
       <div class="memo">
         <input type="text" placeholder=" + Memo Here: " maxlength="18" id="user-input" v-model="memo" @keyup.enter="addNewMemo(memo)">
@@ -104,19 +114,27 @@
     </section>
 
     <!--모달창(설명 뜨는부분)-->
-    <div class="black-bg" v-if="modale == true">
-      <div class="white-bg">
-        <h1>{{ exTitle[0] }}</h1>
+    <div class="black-bg" v-if="modale === true">
+      <div class="white-bg-training">
+        <!--설명창 title관련-->
+        <h1 v-if="selectCourseData.course == 1">{{ exTitleHtml[selectCourseData.stage-1][nextBtnCount] }}</h1>
+        <h1 v-if="selectCourseData.course == undefined">Undefined임..</h1>
+        <h1 v-if="selectCourseData.course == 3">{{ exTitleJs[selectCourseData.stage-1][nextBtnCount] }}</h1>
+        <h1 v-if="selectCourseData.course == 2">{{ exTitleCss[selectCourseData.stage-1][nextBtnCount]}}</h1>
         <img src="../assets/coco_smile.svg" />
-        <p>{{ exParagraph[0] }}</p>
+        <!--설명창 본문 관련-->
+        <p v-if="selectCourseData.course == 1">{{ exDataHtml[selectCourseData.stage-1][nextBtnCount] }}</p>
+        <p v-if="selectCourseData.course == undefined">undefined</p>
+        <p v-if="selectCourseData.course == 2">{{ exDataCss[selectCourseData.stage-1][nextBtnCount] }}</p>
+        <p v-if="selectCourseData.course == 3">{{ exDataJs[selectCourseData.stage-1][nextBtnCount] }}</p>
         <div class="white-bg-btns">
-          <button type="button" class="prev-ex">
+          <button type="button" class="prev-ex" @click="explainBefore">
             <img
               src="../assets/chevron-left-solid.svg"
               alt="go to the page before"
             />
           </button>
-          <button type="button" class="next-ex">
+          <button type="button" class="next-ex" @click="explainNext">
             <img
               src="../assets/chevron-right-solid.svg"
               alt="go to the next page"
@@ -132,40 +150,144 @@
 </template>
 
 <script>
+import codeEditorHtml from "../components/layout/code-editor-html.vue"
+import codeEditorCss from "../components/layout/code-editor-css.vue"
+import codeEditorJavascript from "../components/layout/code-editor-javascript.vue"
+import axios from 'axios'
+import LoginPopup from "../components/layout/login-popup.vue"
+//정답화면 이미지
+var imgHtml1 = require("../../src/assets/resultImg/1-1img.png");
+var imgHtml2 = require("../../src/assets/resultImg/1-2img.png");
+var imgHtml3 = require("../../src/assets/resultImg/1-3img.png");
+var imgCss1 = require("../../src/assets/resultImg/2-1img.png");
+var imgCss2 = require("../../src/assets/resultImg/2-2img.png");
+var imgCss3 = require("../../src/assets/resultImg/2-3img.png");
+var imgJs1 = require("../../src/assets/resultImg/3-1img.png");
+var imgJs2 = require("../../src/assets/resultImg/3-2img.png");
+var imgJs3 = require("../../src/assets/resultImg/3-3img.png");
+//정답코드 이미지
+var answerHtml1 = require("../../src/assets/answerImg/1-1answer.png");
+var answerHtml2 = require("../../src/assets/answerImg/1-2answer.png");
+var answerHtml3 = require("../../src/assets/answerImg/1-3answer.png");
+var answerCss1 = require("../../src/assets/answerImg/2-1answer.png");
+var answerCss2 = require("../../src/assets/answerImg/2-2answer.png");
+var answerCss3 = require("../../src/assets/answerImg/2-3answer.png");
+var answerJs1 = require("../../src/assets/answerImg/3-1answer.png");
+var answerJs2 = require("../../src/assets/answerImg/3-2answer.png");
+var answerJs3 = require("../../src/assets/answerImg/3-3answer.png");
+
+
 export default {
     name : 'Training',
-    props : ['_course', '_stage'],
-    // props: {
-    //   memoList: {type: Array, default: () => [] }
-    // },
-    mounted() {
-      this.setCourseData();
-      this.getCourseData();
+    props : ['_userId', '_course', '_stage', '_loginState'],
+    mounted() {     //home에서 넘어오면서 사용자 course, stage데이터 넘어오도록
+      this.selectCourseData.userId = this._userId;
+      this.selectCourseData.course = this._course;
+      this.selectCourseData.stage = this._stage;
+      
+      console.log("selectCourseData.course:" + this.selectCourseData.course);
+      console.log("selectCourseData.stage:" + this.selectCourseData.stage);
+      console.log("selectCourseData:" + this.selectCourseData);
+      console.log("loginState:" + this.login.loginState);
+    
+    },  
+    components : {
+        codeEditorHtml, codeEditorCss, codeEditorJavascript, LoginPopup
     },
+
+    
     data() {
       return {
-        memoList: [], 
-        modale: false,
+        
+        modale: true,
         showAnswer: false,
         goalBtnState: false,
-        loginState: true,
-        stepNum: ["1", "2", "3"],
-        stepName: ["튜토리얼", "회원가입 창", "달력 만들기"],
-        answerCode: ["이곳에 정답 코드가 보여집니다", "어쩌구"],
-        complete: ["완성화면", "로그인 완성화면 예시", "달력 완성화면 예시"],
-        exTitle: [
-          "HTML Step 1 튜토리얼 진행을 환영합니다!",
-          "HTML Step 2 회원가입창 만들기 단계를 진행합니다!",
-        ],
-        exParagraph: [
-          "코드를 작성하기에 앞서,\nhtml의 뼈대가 될 기본 구조부터 알아볼거예요!",
-        ],
         bookmarkState: false,
+        nextBtnCount: 0,
+        exTitleCount: 0,
+        memoList: [],
+        memo: "",
+
+        login : {
+          loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
+          userName : 'Welcome'
+        },
         selectCourseData : { //사용자가 선택한 코스와 관련된 데이터 + 유저 아이디
-          course: 0,
-          stage: 0,
-        }
-      }  
+          course: 1,
+          stage: 1,
+        },
+        userId: "",
+
+        stepNum: ["1", "2", "3"],
+        courseName: ["HTML", "CSS", "Javascript"],
+        stepName: ["1 튜토리얼", "2 달력 만들기", "3 회원가입 창"],
+
+        //완성 이미지
+        completeImgHtml: [imgHtml1, imgHtml2, imgHtml3],
+        completeImgCss: [imgCss1, imgCss2, imgCss3],
+        completeImgJs: [imgJs1, imgJs2, imgJs3],
+        //정답 코드 이미지
+        answerImgHtml:[answerHtml1, answerHtml2, answerHtml3],
+        answerImgCss: [answerCss1, answerCss2, answerCss3],
+        answerImgJs: [answerJs1, answerJs2, answerJs3],
+        //설명 데이터 
+        exDataHtml: [["content1","content2", "content3"], ["content4", "content5", "content6"], ["content7", "content8", "content9"]],
+        exDataCss: [["content1","content2", "content3"], ["content4", "content5", "content6"], ["content7", "content8", "content9"]],
+        exDataJs: [["content1","content2", "content3"], ["content4", "content5", "content6"], ["content7", "content8", "content9"]],
+       
+        exTitleHtml: [
+          [
+            "HTML Step 1 튜토리얼 진행을 환영합니다!",
+            "HTML Step 1 튜토리얼 진행을 환영합니다!",
+            "HTML Step 1 튜토리얼 진행을 환영합니다!"
+          ],
+          [
+            "HTML Step 2 달력 만들기 만들기 단계를 진행합니다!",
+            "HTML Step 2 달력 만들기 만들기 단계를 진행합니다!",
+            "HTML Step 2 달력 만들기 만들기 단계를 진행합니다!"
+          ],
+          [
+            "HTML Step 3 회원가입 창 만들기 단계를 진행합니다!",
+            "HTML Step 3 회원가입 창 만들기 단계를 진행합니다!",
+            "HTML Step 3 회원가입 창 만들기 단계를 진행합니다!"
+          ]
+        ],
+        exTitleCss: [
+          [
+            "CSS Step 1 튜토리얼 단계를 진행합니다!",
+            "CSS Step 1 튜토리얼 단계를 진행합니다!",
+            "CSS Step 1 튜토리얼 단계를 진행합니다!",
+          ],
+          [
+            "CSS Step 2 달력 만들기 단계를 진행합니다!",
+            "CSS Step 2 달력 만들기 단계를 진행합니다!",
+            "CSS Step 2 달력 만들기 단계를 진행합니다!"
+          ],
+          [
+            "CSS Step 3 회원가입 창 만들기 단계를 진행합니다!",
+            "CSS Step 3 회원가입 창 만들기 단계를 진행합니다!",
+            "CSS Step 3 회원가입 창 만들기 단계를 진행합니다!"
+          ]
+        ],  
+        exTitleJs: [
+          [
+            "Javascript Step 1 튜토리얼 단계를 진행합니다!",
+            "Javascript Step 1 튜토리얼 단계를 진행합니다!",
+            "Javascript Step 1 튜토리얼 단계를 진행합니다!"
+          ],
+          [
+            "Javascript Step 2 달력 만들기 단계를 진행합니다!",
+            "Javascript Step 2 달력 만들기 단계를 진행합니다!",
+            "Javascript Step 2 달력 만들기 단계를 진행합니다!"
+          ],
+          [
+            "Javascript Step 3 회원가입 창 만들기 단계를 진행합니다!",
+            "Javascript Step 3 회원가입 창 만들기 단계를 진행합니다!",
+            "Javascript Step 3 회원가입 창 만들기 단계를 진행합니다!"
+          ]
+        ],
+        
+      }
     },
     methods: {
       addNewMemo(memo) {
@@ -182,20 +304,204 @@ export default {
       clearMemo() {
         this.memoList = [];
       },
-      setCourseData() {
-        if (this._course != undefined) {
-          console.log('setLocalStorage :' + this._course, ',' + this._stage);
-          localStorage.setItem('courseData', JSON.stringify({course : this._course, stage : this._stage}));
+      loginOpen() {
+        this.loginPopupState = 1;
+      },
+      loginClose() {
+        this.loginPopupState = 0;   
+      },
+    
+      modaleStateChange() {
+        if(this.modale == false) {
+          this.modale = true;
+        }else{
+          this.modale = false;
         }
       },
-      getCourseData() {
-        let courseData = JSON.parse(localStorage.getItem('courseData'))
-        console.log('getLocalStorage :' + courseData.course + ',' + courseData.stage);
-        this.selectCourseData.course = this._course;
-        this.selectCourseData.stage = this._stage;
+      pageNext(){ //다음 stage로 넘어가는 버튼
+        console.log("pagenext실행");
+        this.modale = true;
+
+        this.selectCourseData.stage++;  //다음 stage 진행
+        if (this.selectCourseData.stage == 4) {
+          this.selectCourseData.course++; //다음 course로 넘어감
+          this.selectCourseData.stage = 1; //다음 course의 stage1부터 시작 
+        } 
+        if (this.selectCourseData.course == 4) { //3-3에서 pageNext버튼 눌렀을시
+          this.selectCourseData.course = 3; //3 초과하는 수는 유효X
+          alert("마지막 페이지 입니다!");
+          this.modale = false;
+          this.selectCourseData.stage = 3; //그대로 머물러 있게 하기 위함 
+
+        }
+      },
+      pageBefore(){ //이전 stage로 돌아가는 버튼
+        console.log("pageBefore실행");
+        this.modale = true; 
+        this.selectCourseData.stage--;  //이전 stage 진행
+        if (this.selectCourseData.stage == 0) {
+          this.selectCourseData.course--; //이전 course로 넘어감
+          this.selectCourseData.stage = 1; //이전 course의 stage1부터 시작 
+        } 
+        if (this.selectCourseData.course == 0) { //1-1에서 pageBefore버튼 눌렀을시
+          this.selectCourseData.course = 1; //0 이하의 수는 유효X
+          alert("첫 페이지 입니다!");
+          this.modale = false;
+          this.selectCourseData.stage = 1; //그대로 머물러 있게 하기 위함 
+
+        }
+
+      },
+      //완성했어요 버튼 클릭시
+      onComplete(){
+        if (this.loginState == 0) {
+          alert("완성한 stage 저장을 위해서는 로그인이 필요합니다.");
+        }else{
+          console.log("oncomplete 함수 실행됨(완성했어요)");
+          axios
+          .post('http://3.36.131.138/api/stageFinish', {  //stageFinish (완료 단계) 저장
+            userId : this.userId,
+            course : this.selectCourseData.course,
+            stage: this.selectCourseData.stage
+          })
+          .then(res => {
+            console.log("oncomplete res:" + res);
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        }
+      },
+      saveScrap(){   //scrap하기
+        if(this.loginState == 0) {
+          alert("로그인하셔야 스크랩이 가능합니다.");
+        } else if (this.bookmarkState == false) { //로그인이 되어있고, bookmarkstate가 활성화되어있지 않은 상황
+          this.bookmarkState = true; 
+        }
+        console.log("saveScrap 함수 실행됨");
+        axios
+        .post('http://3.36.131.138/api/scrap', {
+          userId : this.userId,
+          course : this.selectCourseData.course,
+          stage: this.selectCourseData.stage
+        })
+        .then(res => {
+          console.log(res);
+          console.log("saveScrap 실행성공");
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      },
+
+      deleteScrap(){ //아직 서버 반영 x 
+        this.bookmarkState = false;
+        axios
+        .delete('http://3.36.131.138/api/scrap/' + this.selectCourseData.course + "/" + this.selectCourseData.stage, {
+        })
+        .then(res => {
+          console.log(res);
+          console.log("deleteScrap 실행성공");
+        })
+        .catch(err => {
+          console.log(err);
+        }) 
+      },
+
+      getScrap(){   //scrap 되어있는지 확인. 페이지 로드 되자마자 실행되어야 함. (아직 서버 반영 안됨!!!)
+        console.log("getScrap 함수 실행됨");
+        axios
+        .get("http://localhost:8090/api/scrap" + "/ " + this.selectCourseData.course + "/" + this.selectCourseData.stage )
+        .then(res => {
+          this.bookmarkState = true;
+          console.log("getScrap 성공");
+          console.log(res);
+        })
+        .catch(err => {
+          console.log("getScrap 에러");
+          console.log(err);
+          this.bookmarkState = false;
+        })
+      },
+      onStageIng(){ //바로 실행되어야함 !!
+        if(this.userId != undefined){ //로그인이 되어있는 경우
+          console.log("onStageIng함수 실행됨");
+          axios
+          .post('http://3.36.131.138/api/stageIng', {  //stageIng (진행중 단계) 저장
+            userId : this.userId,
+            course : this.selectCourseData.course,
+            stage: this.selectCourseData.stage
+          })
+          .then(res => {
+            console.log(res);  
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        }else{ //로그인 되어있지 않은 경우
+          console.log("유저: Undefined, onstageIng 실행되지 않음");
+        }
+      },
+    
+      getHtmlCode(){   //Html코드랑 설명 불러오기. 페이지 로드 되자마자 실행되어야 함.아직 반영 x
+        console.log("getHtmlCode 함수 실행됨");
+          axios
+          .get("http://3.36.131.138/api/" + this.selectCourseData.course + "/" + this.selectCourseData.stage)  
+          .then(res => {
+            console.log("gethtmlcode: "+ res);
+            //27개 content들 오는 것으로 알고있음 
+          })
+          .catch(err => {
+            console.log(err);
+          })
+      },
+
+      explainNext(){ //설명창 제목, 본문 넘기기 위함
+        this.nextBtnCount++;
+        if(this.nextBtnCount == 3) { 
+          console.log("설명창 종료");
+          this.modale = false;
+          this.nextBtnCount = 0; 
+        }
+      },
+      explainBefore() {  //설명창 제목, 본문 뒤로가기 위함
+        this.nextBtnCount--;
+        if(this.nextBtnCount < 0) {
+          this.nextBtnCount = 0; //가장 첫 설명에서 이전으로 넘어갈 순 없으므로 
+        }
+      },
+
+      //코드창 재실행(새로고침기능을 위함인데, 작동 안됨...)
+      reload(){
+        codeEditorHtml.location.reload;
       }
-    }
-  
+
+    },
+
+    created() {
+      this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
+
+      console.log("loginState출력:" + this.login.loginState);
+      this.getScrap();
+      this.onStageIng();
+      // this.getHtmlCode();
+      axios
+        //로그인이 되었다면 유저 정보 요청해 id 알아오기, post시 이용 
+        .get("http://3.36.131.138/memberInfo") //로컬에서는 현재 실행 안될수도 있음 
+        .then(res => {
+          this.userId = res.data.userId;
+          console.log(res);
+          console.log("userId는:" + this.userId);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        
+    },
+    // mounted() {
+
+    // }
+    
   
 };
 
@@ -243,19 +549,18 @@ export default {
 }
 #training iframe {
   display: flex;
-  width: 600px;
+  width: 600px; height:100%;
   margin-left:0;
   background-color: white;
-  z-index: 1;
+}
+#code-editor span {
+  position: absolute;
+  width: 40%;
+  top: 24%; left: 31%;
+  background: #d4d2db;
 }
 
 /*left section 관련*/
-/*.left-middle {
-  width: 1200px;
-  height: 700px;
-  display:flexbox;
-  flex-direction: row;
-}*/
 
 #training .left-section {
   position: relative;
@@ -350,19 +655,19 @@ form {
 }
 
 /*모달창 관련*/
-.black-bg {
+/* .black-bg {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   position: fixed;
-  padding: 20px;
+  
 
-}
-.white-bg {
+} */
+.white-bg-training {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 130px auto;
+  margin: 8% 27% auto auto;
   width: 900px;
   height: 600px;
   background: linear-gradient(
@@ -374,14 +679,14 @@ form {
   border-radius: 20px;
   padding: 20px;
 }
-.white-bg h1 {
+.white-bg-training h1 {
   margin: 0;
   position: relative;
   font-weight: normal;
   font-size: 29px;
 }
 
-.white-bg h1::after {
+.white-bg-training h1::after {
   content: "";
   display: block;
   width: 900px;
@@ -395,14 +700,14 @@ form {
   /* position: relative;
   right: 90px; */
 }
-.white-bg > img {
+.white-bg-training > img {
   width: 120px;
   height: 100px;
   position: relative;
   left: 350px;
   bottom: 40px;
 }
-.white-bg p {
+.white-bg-training p {
   width: 700px;
   height: 450px;
   position: relative;
@@ -411,12 +716,12 @@ form {
   text-align: center;
   font-size: 18px;
 }
-.white-bg button {
+.white-bg-training button {
   background: none;
   border: none;
 }
-.white-bg button :not(.skip-btn),
-.white-bg button img {
+.white-bg-training button :not(.skip-btn),
+.white-bg-training button img {
   width: 80px;
   height: 60px;
 }
@@ -455,29 +760,30 @@ form {
   
 }
 
-.explain-answer {
-  /* display: flex;
+/*.explain-answer {
+   display: flex;
   flex-direction: row;
   align-content: center;
-  margin: 20px auto auto 600px; */
-}
+  margin: 20px auto auto 600px;
+} */
 
 .answer {
   width: 550px;
   height: 710px;
   background: white;
   border-radius: 8px;
-  position: relative;
-  top: 94px; right: 411px;
+  position:fixed;
+  top: 121px; right: 610px;
   border: #d4d2db thin solid;
   border-radius: 20px;
   z-index: 3;
 }
-.answer p {
+.answer img {
   width: 500px;
-  height: 750px;
+  height: auto;
   margin: auto auto;
-  position: fixed;
+  overflow-y: scroll;
+  /* position: fixed; */
 }
 .answer-btn {
   width: 140px;
@@ -514,7 +820,7 @@ form {
 
 footer {
   display: flex;
-  width: 100%; height: 77px;
+  width: 100%; height: 10%;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -540,9 +846,10 @@ footer img:hover {
 }
 
 /*right-section 관련 부분들*/
-nav {
+.right-section nav {
   display: flex;
-  width: 100%;
+  width: 100%; height: 5%;
+  margin-bottom: 6%;
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -553,22 +860,22 @@ nav {
   flex-direction: column;
   align-items: flex-end;
   width: 25%;
-  padding: 0 10px;
+  padding: 10px 3% 5% 3%;
 }
 
-h3 {
+.right-section nav h3 {
+  display: flex;
   font-size: 17px;
   color: #d4d2db;
-  margin-left: 10px;
   font-weight:bolder;
 }
 .log-btn {
-  /*login,sign-up 버튼 감싸는div*/
-  margin: 20px 20px;
+  /*login,sign-up 버튼 감싸는div
+  margin: 20px 20px;*/
   background: none;
 }
 .sign-up-btn {
-  margin-left: 15px;
+  margin-left: 5px;
   background: none;
   border: none;
   font-size: 16px;
@@ -580,20 +887,23 @@ h3 {
   margin-left: 15px;
   width: 1px;
   height: 22px;
-  vertical-align: middle;
   background:#d4d2db;
-  position: fixed;
+  
 }
-.login-btn {
+.log-btn .login-btn {
+  position: relative;
   background: none;
   border: none;
+  margin: 0;
+  margin-right: 15px;
   font-size: 16px;
   color:#d4d2db;
 }
-.login-btn::after {
+.log-btn .login-btn::after {
   content: "";
   position: absolute;
-  top: 30px; right: 344px;
+  top: 8px; left: 52px;
+  margin-right: auto; margin-left: auto;
   width: 4px; height: 4px;
   border-radius: 50%;
   background:#d4d2db;
@@ -610,7 +920,6 @@ h3 {
   float: right;
   width: 1.5px;
   height: 22px;
-  vertical-align: middle;
   background: rgb(116, 116, 116);
   margin-left: 14px;
 }
@@ -622,7 +931,7 @@ h3 {
 }
 .goal-btn {
   padding: 0;
-  margin-right: 33px;
+  
   width: 150px;
   height: 32px;
   border: none;
@@ -642,7 +951,7 @@ h3 {
   border-radius: 20px; border: #d4d2db thin solid;
   z-index: 2;
 }
-.complete-p {
+.complete-img img {
   width: 500px; height: 600px;
   margin: auto auto;
 }
@@ -662,6 +971,7 @@ h3 {
   margin: 100px auto;
   width: 100%; height: 100%;
   background-color: aliceblue;
+  overflow-y: hidden;
 
 }
 .memo::before {
@@ -682,24 +992,24 @@ h3 {
 }
 .memo-group{
   width: 100%;
-  height: 70%;
+  height: 82%;
   padding: 0 20px;
 }
 .memo-group ul li {
   width: fit-content;
 }
 .memo-list {
-  width: 100%; height: 100%;
+  width: 100%; height: 96%;
   overflow-y: scroll;
   margin: 0px;
   margin-top: 10px;
   background: none;
 }
 .clearMemo {
-  position: absolute;
-  right: 75px;
-  bottom: 40px;
-  color: #55708d;
+  width: 50px; height: 20px;
+  margin-left: 85%;
+  font-weight: bolder; color: #55708d;
+  background: #FFFFFF; border-radius: 46%; border: thin solid #798ca0;
   z-index: 1;
   
 }

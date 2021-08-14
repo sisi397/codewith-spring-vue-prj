@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor // 기본생성자를 대신 생성해줍니다.
 @Entity
-public class CssCode extends Timestamped {
+public class CssCode{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

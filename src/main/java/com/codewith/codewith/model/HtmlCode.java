@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class HtmlCode extends Timestamped{
+public class HtmlCode{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

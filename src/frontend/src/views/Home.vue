@@ -33,21 +33,21 @@
         <div class="course-container">
             <div class="course" style="align-self: flex-end;">
               <img class="course-moon" src="../assets/img_cresent-moon-white.svg" alt="">
-              <div class="course-box" @click="courseOpen(0)">
+              <div class="course-box" @click="courseOpen(1)">
                   <img src="../assets/course/html.svg" alt="">
                   <div class="course-name">HTML<br>Course</div>
               </div>
             </div>
             <div class="course" style="align-self: center">
               <img class="course-moon" src="../assets/img_half-moon-white.svg" alt="">
-              <div class="course-box" @click="courseOpen(1)">
+              <div class="course-box" @click="courseOpen(2)">
                   <img src="../assets/course/css.svg" alt="">
                   <div class="course-name">CSS<br>Course</div>
               </div>
             </div>
             <div class="course" style="align-self: flex-start">
               <img class="course-moon" src="../assets/img_full-moon-white.svg" alt="">
-              <div class="course-box" @click="courseOpen(2)">
+              <div class="course-box" @click="courseOpen(3)">
                   <img src="../assets/course/js.svg" alt="">
                   <div class="course-name">JavaScript<br>Course</div>
               </div>

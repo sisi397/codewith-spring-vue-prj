@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class JavascriptCode extends Timestamped{
+public class JavascriptCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
