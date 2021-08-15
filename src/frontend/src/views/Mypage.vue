@@ -14,7 +14,7 @@
                 <!--userImage값이 들어왔을경우-->
                 <img v-bind:src="userImage" v-if="userImage != null" class="user-img">
                 <!--userImage값이 null일경우 나타나게 할 디폴트 이미지-->
-                <img src="../assets/img_profile-default.svg" v-if="userImage === null" class="user-img">     
+                <img src="../assets/img_profile-default.svg" v-if="userImage == null" class="user-img">     
                 <button type="button" class="input-btn">
                     <input type="file" id="input-file" src="" v-on:change="addUserImg" accept="" style="display:none">
                     <label img="../assets/btn_plus.svg" for="input-file">
@@ -91,7 +91,10 @@ export default {
         return {
             loginPopupState : 0,
             userImage : null,
-            userName : '',
+            login : {
+                loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
+                userName : ''
+            },
             userId : '',
             memo : [],
             course : [],
@@ -106,12 +109,14 @@ export default {
         }
     },
     created() { //로그인이 된 상태 가정, db에 회원정보 넘어간 상태 
+        this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
+        // this.login.userName = JSON.parse(localStorage.getItem('userName')); 
         console.log("created실행");
         // console.log(this.userImg);
         axios
         .get("http://3.36.131.138/memberInfo")
         .then(res => {
-          this.userName = res.data.userId;
+          this.userId = res.data.userId;
         })
         .catch(err => {
           console.log(err);
@@ -193,12 +198,12 @@ export default {
         userImg() { //user 이미지 받아오기 
             console.log("userImg 받아오기 실행");
             axios
-            .post('http://3.36.131.138/api/userImg')
+            .get('http://3.36.131.138/api/userImg')
             .then(res => {
                 console.log(res);
                 console.log(res.data);
                 if(res.data == null){
-                    this.userImage="/home/ubuntu/images/53df9f25-6cc3-4a53-8ae7-771d594be0a5_캡처.JPG";
+                    this.userImage = "/home/ubuntu/images/53df9f25-6cc3-4a53-8ae7-771d594be0a5_캡처.JPG";
                 }else {
                     this.userImage = "/home/ubuntu/images" + res.data;
                 }   

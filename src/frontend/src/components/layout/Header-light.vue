@@ -45,7 +45,7 @@ export default {
                     console.log("로그아웃 되었습니다.");
                     localStorage.setItem('loginState', JSON.stringify(0)); //loginState 0으로 초기화 후 로컬스토리지에 다시 저장
                     localStorage.setItem('userName', 'Welcome');
-                    // this.$router.push({name : 'Home'});
+                    this.$router.push({name : 'Home'});
                     this.$emit('_logout');
                 })
                 .catch(err => {

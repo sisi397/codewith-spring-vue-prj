@@ -6,6 +6,11 @@
         :_loginPopupState = "loginPopupState"
         @_loginClose="loginClose"
     ></LoginPopup>
+    <HeaderLight
+        style="display: none"
+        :_loginPopupState = "loginPopupState"
+        @_loginOpen = "loginOpen"
+    ></HeaderLight>
     <section class="left-section">
       <div class="left-header">
         <router-link class="title-btn" :to="{ name: 'Home' }">CodeWith</router-link>
@@ -29,21 +34,29 @@
           </div>
         </div>
       </div>
-      <img class="bookmark" src="../assets/bookmark-regular.svg" @click="saveScrap()" v-if="bookmarkState === false"> 
-      <img class="bookmark" src="../assets/bookmark-solid.svg" @click="deleteScrap()" v-if="bookmarkState === true">
+      <button type="button" @click="saveScrap()" v-if="bookmarkState === false">
+        <img class="bookmark" src="../assets/bookmark-regular.svg">
+      </button>
+      <button type="button" @click="deleteScrap()" v-if="bookmarkState === true">
+        <img class="bookmark" src="../assets/bookmark-solid.svg" >
+      </button>
       <!--북마크 체크되어있을때 true, 아니면 false-->
       <!-- 코드 에디터 부분 -->
       <div id="code-editor">
-          <codeEditorHtml name="codeEditorHtml" v-if="selectCourseData.course == 1"></codeEditorHtml>
-          <codeEditorHtml v-if="selectCourseData.course == undefined "></codeEditorHtml>
-          <codeEditorCss v-if="selectCourseData.course == 2"></codeEditorCss>
-          <codeEditorJavascript v-if="selectCourseData.course== 3"></codeEditorJavascript>    
+          <codeEditorHtml v-if="selectCourseData.course==1"></codeEditorHtml>
+          <codeEditorHtml v-if="selectCourseData.course==undefined "></codeEditorHtml>
+          <codeEditorCss1 v-if="selectCourseData.course==2&&selectCourseData.stage==1"></codeEditorCss1>
+          <codeEditorCss2 v-if="selectCourseData.course==2&&selectCourseData.stage==2"></codeEditorCss2>
+          <codeEditorCss3 v-if="selectCourseData.course==2&&selectCourseData.stage==3"></codeEditorCss3>
+          <codeEditorJavascript1 v-if="selectCourseData.course==3&&selectCourseData.stage==1"></codeEditorJavascript1>
+          <codeEditorJavascript2 v-if="selectCourseData.course==3&&selectCourseData.stage==2"></codeEditorJavascript2>
+          <codeEditorJavascript3 v-if="selectCourseData.course==3&&selectCourseData.stage==3"></codeEditorJavascript3>    
       </div>
       
       <footer>
         <div class="form-buttons">
           <button type="submit" class="submit" @click="onComplete()">완성했어요</button>
-          <button type="button" class="reset" @click="reload">초기화</button>
+          <!-- <button type="button" class="reset" @click="reload">초기화</button> -->
         </div>
         <div class="page-buttons">
           <button type="button" class="prev-page" @click="pageBefore">
@@ -65,7 +78,7 @@
       <nav>
         <div class="log-btn">
           <!--로그인 하지 않았을 경우 보임-->
-          <button type="button" class="login-btn" v-if="login.loginState == 0" @click="loginPopupState = 1">
+          <button type="button" class="login-btn" v-if="login.loginState == 0" @click="openLoginPopup">
             Login
           </button>
           <router-link class="sign-up-btn" v-if="login.loginState == 0" :to="{ name: 'Signup' }" @click="$router.push({name: 'Signup'})">Sign-Up</router-link>
@@ -123,10 +136,12 @@
         <h1 v-if="selectCourseData.course == 2">{{ exTitleCss[selectCourseData.stage-1][nextBtnCount]}}</h1>
         <img src="../assets/coco_smile.svg" />
         <!--설명창 본문 관련-->
-        <p v-if="selectCourseData.course == 1">{{ exDataHtml[selectCourseData.stage-1][nextBtnCount] }}</p>
-        <p v-if="selectCourseData.course == undefined">undefined</p>
-        <p v-if="selectCourseData.course == 2">{{ exDataCss[selectCourseData.stage-1][nextBtnCount] }}</p>
-        <p v-if="selectCourseData.course == 3">{{ exDataJs[selectCourseData.stage-1][nextBtnCount] }}</p>
+        <div class="white-bg-p">
+          <p v-html="exData[nextBtnCount]" v-if="selectCourseData.course == 1"></p>
+          <p v-if="selectCourseData.course == undefined">undefined</p>
+          <p v-html="exData[nextBtnCount] " v-if="selectCourseData.course == 2"></p>
+          <p v-html="exData[nextBtnCount]" v-if="selectCourseData.course == 3"></p>
+        </div>
         <div class="white-bg-btns">
           <button type="button" class="prev-ex" @click="explainBefore">
             <img
@@ -151,10 +166,16 @@
 
 <script>
 import codeEditorHtml from "../components/layout/code-editor-html.vue"
-import codeEditorCss from "../components/layout/code-editor-css.vue"
-import codeEditorJavascript from "../components/layout/code-editor-javascript.vue"
+import codeEditorCss1 from "../components/layout/code-editor-css-1.vue"
+import codeEditorCss2 from "../components/layout/code-editor-css-2.vue"
+import codeEditorCss3 from "../components/layout/code-editor-css-3.vue"
+import codeEditorJavascript1 from "../components/layout/code-editor-javascript-1.vue"
+import codeEditorJavascript2 from "../components/layout/code-editor-javascript-2.vue"
+import codeEditorJavascript3 from "../components/layout/code-editor-javascript-3.vue"
 import axios from 'axios'
 import LoginPopup from "../components/layout/login-popup.vue"
+import HeaderLight from "../components/layout/Header-light.vue"
+
 //정답화면 이미지
 var imgHtml1 = require("../../src/assets/resultImg/1-1img.png");
 var imgHtml2 = require("../../src/assets/resultImg/1-2img.png");
@@ -180,29 +201,18 @@ var answerJs3 = require("../../src/assets/answerImg/3-3answer.png");
 export default {
     name : 'Training',
     props : ['_userId', '_course', '_stage', '_loginState'],
-    mounted() {     //home에서 넘어오면서 사용자 course, stage데이터 넘어오도록
-      this.selectCourseData.userId = this._userId;
-      this.selectCourseData.course = this._course;
-      this.selectCourseData.stage = this._stage;
-      
-      console.log("selectCourseData.course:" + this.selectCourseData.course);
-      console.log("selectCourseData.stage:" + this.selectCourseData.stage);
-      console.log("selectCourseData:" + this.selectCourseData);
-      console.log("loginState:" + this.login.loginState);
     
-    },  
     components : {
-        codeEditorHtml, codeEditorCss, codeEditorJavascript, LoginPopup
+        codeEditorHtml, codeEditorCss1, codeEditorCss2, codeEditorCss3, codeEditorJavascript1, codeEditorJavascript2, codeEditorJavascript3, LoginPopup, HeaderLight
     },
 
     
     data() {
       return {
-        
         modale: true,
         showAnswer: false,
         goalBtnState: false,
-        bookmarkState: false,
+        bookmarkState: null,
         nextBtnCount: 0,
         exTitleCount: 0,
         memoList: [],
@@ -234,7 +244,7 @@ export default {
         exDataHtml: [["content1","content2", "content3"], ["content4", "content5", "content6"], ["content7", "content8", "content9"]],
         exDataCss: [["content1","content2", "content3"], ["content4", "content5", "content6"], ["content7", "content8", "content9"]],
         exDataJs: [["content1","content2", "content3"], ["content4", "content5", "content6"], ["content7", "content8", "content9"]],
-       
+        exData: ["", "", ""],
         exTitleHtml: [
           [
             "HTML Step 1 튜토리얼 진행을 환영합니다!",
@@ -242,9 +252,9 @@ export default {
             "HTML Step 1 튜토리얼 진행을 환영합니다!"
           ],
           [
-            "HTML Step 2 달력 만들기 만들기 단계를 진행합니다!",
-            "HTML Step 2 달력 만들기 만들기 단계를 진행합니다!",
-            "HTML Step 2 달력 만들기 만들기 단계를 진행합니다!"
+            "HTML Step 2 달력 만들기 단계를 진행합니다!",
+            "HTML Step 2 달력 만들기 단계를 진행합니다!",
+            "HTML Step 2 달력 만들기 단계를 진행합니다!"
           ],
           [
             "HTML Step 3 회원가입 창 만들기 단계를 진행합니다!",
@@ -281,9 +291,9 @@ export default {
             "Javascript Step 2 달력 만들기 단계를 진행합니다!"
           ],
           [
-            "Javascript Step 3 회원가입 창 만들기 단계를 진행합니다!",
-            "Javascript Step 3 회원가입 창 만들기 단계를 진행합니다!",
-            "Javascript Step 3 회원가입 창 만들기 단계를 진행합니다!"
+            "Javascript Step 3 회원가입 창 단계를 진행합니다!",
+            "Javascript Step 3 회원가입 창 단계를 진행합니다!",
+            "Javascript Step 3 회원가입 창 단계를 진행합니다!"
           ]
         ],
         
@@ -320,8 +330,6 @@ export default {
       },
       pageNext(){ //다음 stage로 넘어가는 버튼
         console.log("pagenext실행");
-        this.modale = true;
-
         this.selectCourseData.stage++;  //다음 stage 진행
         if (this.selectCourseData.stage == 4) {
           this.selectCourseData.course++; //다음 course로 넘어감
@@ -334,10 +342,13 @@ export default {
           this.selectCourseData.stage = 3; //그대로 머물러 있게 하기 위함 
 
         }
+        this.getHtmlCode();
+        this.modale = true;
+
       },
       pageBefore(){ //이전 stage로 돌아가는 버튼
         console.log("pageBefore실행");
-        this.modale = true; 
+        
         this.selectCourseData.stage--;  //이전 stage 진행
         if (this.selectCourseData.stage == 0) {
           this.selectCourseData.course--; //이전 course로 넘어감
@@ -350,7 +361,8 @@ export default {
           this.selectCourseData.stage = 1; //그대로 머물러 있게 하기 위함 
 
         }
-
+        this.getHtmlCode();
+        this.modale = true; 
       },
       //완성했어요 버튼 클릭시
       onComplete(){
@@ -358,6 +370,7 @@ export default {
           alert("완성한 stage 저장을 위해서는 로그인이 필요합니다.");
         }else{
           console.log("oncomplete 함수 실행됨(완성했어요)");
+          alert("완료한 단계에 저장되었습니다!");
           axios
           .post('http://3.36.131.138/api/stageFinish', {  //stageFinish (완료 단계) 저장
             userId : this.userId,
@@ -373,25 +386,26 @@ export default {
         }
       },
       saveScrap(){   //scrap하기
-        if(this.loginState == 0) {
+        if(this.login.loginState == 0) {
           alert("로그인하셔야 스크랩이 가능합니다.");
-        } else if (this.bookmarkState == false) { //로그인이 되어있고, bookmarkstate가 활성화되어있지 않은 상황
-          this.bookmarkState = true; 
         }
-        console.log("saveScrap 함수 실행됨");
-        axios
-        .post('http://3.36.131.138/api/scrap', {
-          userId : this.userId,
-          course : this.selectCourseData.course,
-          stage: this.selectCourseData.stage
-        })
-        .then(res => {
-          console.log(res);
-          console.log("saveScrap 실행성공");
-        })
-        .catch(err => {
-          console.log(err);
-        })
+        if(this.login.loginState == 1) { //로그인이 되어있고, bookmarkstate가 활성화되어있지 않은 상황
+            this.bookmarkState = true;    
+            console.log("saveScrap 함수 실행됨");
+            axios
+            .post('http://3.36.131.138/api/scrap', {
+              userId : this.userId,
+              course : this.selectCourseData.course,
+              stage: this.selectCourseData.stage
+            })
+            .then(res => {
+              console.log(res);
+              console.log("saveScrap 실행성공");
+            })
+            .catch(err => {
+              console.log(err);
+            })
+        }
       },
 
       deleteScrap(){ //아직 서버 반영 x 
@@ -412,15 +426,15 @@ export default {
         console.log("getScrap 함수 실행됨");
         axios
         .get("http://localhost:8090/api/scrap" + "/ " + this.selectCourseData.course + "/" + this.selectCourseData.stage )
-        .then(res => {
+        .then(res => { //scrap이 되어있는 상태!
           this.bookmarkState = true;
           console.log("getScrap 성공");
           console.log(res);
         })
-        .catch(err => {
+        .catch(err => { //scrap이 되어있지 않은 상태!
+          this.bookmarkState = false;
           console.log("getScrap 에러");
           console.log(err);
-          this.bookmarkState = false;
         })
       },
       onStageIng(){ //바로 실행되어야함 !!
@@ -445,15 +459,29 @@ export default {
     
       getHtmlCode(){   //Html코드랑 설명 불러오기. 페이지 로드 되자마자 실행되어야 함.아직 반영 x
         console.log("getHtmlCode 함수 실행됨");
+        console.log(this.selectCourseData.course);
+        console.log(this.selectCourseData.stage);
+
+          //
+        //if(this.selectCourseData.course == 1) {  this.selectCourseData.course + "/" + this.selectCourseData.stage
           axios
-          .get("http://3.36.131.138/api/" + this.selectCourseData.course + "/" + this.selectCourseData.stage)  
-          .then(res => {
-            console.log("gethtmlcode: "+ res);
-            //27개 content들 오는 것으로 알고있음 
-          })
+          .get("http://3.36.131.138/api/" + this.selectCourseData.course + "/" + this.selectCourseData.stage) 
+            .then(res => {
+            console.log("gethtmlcode:");
+            console.log(res);
+            this.exData[0] = res.data.content1.replace(/(?:\r\n|\r|\n)/g, '<br />').split('\n').join('<br />');
+            this.exData[1] = res.data.content2.replace(/(?:\r\n|\r|\n)/g, '<br />').split('\n').join('<br />');
+            this.exData[2] = res.data.content3.replace(/(?:\r\n|\r|\n)/g, '<br />').split('\n').join('<br />');
+            // this.exData.forEach(this.replaceHtml(this.exData));  
+          }) 
           .catch(err => {
             console.log(err);
-          })
+            console.log("getHtmlCode에러");
+          }) 
+          
+        //}  
+          
+          
       },
 
       explainNext(){ //설명창 제목, 본문 넘기기 위함
@@ -474,17 +502,14 @@ export default {
       //코드창 재실행(새로고침기능을 위함인데, 작동 안됨...)
       reload(){
         codeEditorHtml.location.reload;
-      }
+      },
 
-    },
+    }, //여기까지 method
 
-    created() {
-      this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
+    // mounted() {
+    // },
 
-      console.log("loginState출력:" + this.login.loginState);
-      this.getScrap();
-      this.onStageIng();
-      // this.getHtmlCode();
+    created() {     //home에서 넘어오면서 사용자 course, stage데이터 넘어오도록
       axios
         //로그인이 되었다면 유저 정보 요청해 id 알아오기, post시 이용 
         .get("http://3.36.131.138/memberInfo") //로컬에서는 현재 실행 안될수도 있음 
@@ -495,12 +520,17 @@ export default {
         })
         .catch(err => {
           console.log(err);
-        })
-        
-    },
-    // mounted() {
-
-    // }
+        }),
+      this.selectCourseData.course = this._course;
+      this.selectCourseData.stage = this._stage;
+      this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
+      // this.login.userName = JSON.parse(localStorage.getItem('userName'));  
+      console.log("loginState:" + this.login.loginState);
+      this.getHtmlCode();
+      this.onStageIng();
+      this.getScrap();
+    }
+    
     
   
 };
@@ -581,19 +611,6 @@ export default {
   align-items: center;
 }
 
-
-/*
-.left-section textarea {
-  margin: 0px auto auto 20px;
-  height: 100%;
-  width: 460px;
-  background: none;
-  color: white;
-  font-size: 16px;
-  overflow: hidden;
-  resize: none;
-}
-*/
 .title-btn {
   width: 100px;
   font-size: 24px;
@@ -611,14 +628,16 @@ export default {
   height: 40px;
 }
 .submit {
-  width: 140px;
+  width: 169px;
   height: 40px;
   font-size: 17px;
   margin-right: 40px;
   border-radius: 6px;
   border: none;
-  background-color: #24b3ca;
+  background: rgb(137,68,250);
+  background: linear-gradient(90deg, rgba(137,68,250,1) 0%, rgba(75,93,252,1) 49%, rgba(48,134,253,1) 67%, rgba(0,209,255,1) 95%);
   color: white;
+  border: white solid 1px;
 }
 .reset {
   width: 100px;
@@ -667,9 +686,10 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
   margin: 8% 27% auto auto;
   width: 900px;
-  height: 600px;
+  height: 618px;
   background: linear-gradient(
     0deg,
     rgba(255, 255, 255, 0.42826086956521736) 0%,
@@ -703,29 +723,37 @@ form {
 .white-bg-training > img {
   width: 120px;
   height: 100px;
-  position: relative;
-  left: 350px;
-  bottom: 40px;
+  position: absolute;
+  right: 48px;
+  top: 6px;
 }
+.white-bg-p{
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  width: 693px;
+  height: 430px;
+  margin: auto auto;
+  overflow-y: scroll;
+}
+
 .white-bg-training p {
-  width: 700px;
-  height: 450px;
-  position: relative;
-  top: -60px;
-  margin: 0;
+  display: flex;
+  margin: auto auto;
   text-align: center;
   font-size: 18px;
+  
 }
-.white-bg-training button {
-  background: none;
-  border: none;
-}
+
 .white-bg-training button :not(.skip-btn),
 .white-bg-training button img {
   width: 80px;
   height: 60px;
 }
 .white-bg-btns {
+  height: 66px; width:auto;
+  background: none;
+  border: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -742,7 +770,7 @@ form {
   padding: 0;
   font-size: 17px;
   color: #3b3485;
-  background-color: white;
+  background: none;
   border-radius: 5px;
   position: relative;
   left: 250px;
@@ -770,19 +798,19 @@ form {
 .answer {
   width: 550px;
   height: 710px;
-  background: white;
+  background: #f4f5f6;
   border-radius: 8px;
   position:fixed;
   top: 121px; right: 610px;
   border: #d4d2db thin solid;
   border-radius: 20px;
+  overflow-y: scroll;
   z-index: 3;
 }
 .answer img {
-  width: 500px;
-  height: auto;
+  width: 544px; height: auto;
   margin: auto auto;
-  overflow-y: scroll;
+  
   /* position: fixed; */
 }
 .answer-btn {
@@ -824,7 +852,7 @@ footer {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0 100px;
+  padding-right: 16%; padding-left: 17%;
 }
 
 footer img {
@@ -952,7 +980,7 @@ footer img:hover {
   z-index: 2;
 }
 .complete-img img {
-  width: 500px; height: 600px;
+  width: 500px; height: auto;
   margin: auto auto;
 }
 .x-btn {
