@@ -27,16 +27,16 @@ public class ScrapController {
     @GetMapping("/api/scrap")
     public List<Scrap> getScrap(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        //String userId = (String)(session.getAttribute("userId"));
-        String userId = "id";
+        String userId = (String)(session.getAttribute("userId"));
+        //String userId = "id";
         return scrapRepository.findAllByUserId(userId).get();
     }
 
     @GetMapping("/api/scrap/{course}/{stage}")
     public Scrap getStageScrap(HttpServletRequest request, @PathVariable int course, @PathVariable int stage) {
         HttpSession session = request.getSession();
-        //String userId = (String)(session.getAttribute("userId"));
-        String userId = "id";
+        String userId = (String)(session.getAttribute("userId"));
+        //String userId = "id";
 
         return scrapRepository.findByUserIdAndCourseAndStage(userId,course,stage).get();
     }
@@ -63,8 +63,8 @@ public class ScrapController {
     @DeleteMapping("/api/scrap/{course}/{stage}")
     public Long deleteScrap(HttpServletRequest request, @PathVariable int course, @PathVariable int stage){
         HttpSession session = request.getSession();
-        //String userId = (String)(session.getAttribute("userId"));
-        String userId = "id";
+        String userId = (String)(session.getAttribute("userId"));
+        //String userId = "id";
         Long id = null;
         
         boolean present = scrapRepository.findByUserIdAndCourseAndStage(userId,course,stage).isPresent();

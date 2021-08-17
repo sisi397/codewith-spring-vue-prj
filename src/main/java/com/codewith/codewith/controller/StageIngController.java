@@ -27,8 +27,8 @@ public class StageIngController {
     @GetMapping("/api/stageIng/{course}")
     public StageIng getStageIng(@PathVariable int course, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        //String userId = (String)(session.getAttribute("userId"));
-        String userId = "id";
+        String userId = (String)(session.getAttribute("userId"));
+        //String userId = "id";
         return stageIngRepository.findByUserIdAndCourse(userId,course).get();
     }
 
@@ -36,8 +36,8 @@ public class StageIngController {
     @GetMapping("/api/stageIng")
     public List<StageIng> getStageIngAll(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        //String userId = (String)(session.getAttribute("userId"));
-        String userId = "id";
+        String userId = (String)(session.getAttribute("userId"));
+        //String userId = "id";
         return stageIngRepository.findAllByUserId(userId).get();
     }
 //    @GetMapping("/api/stageIng")

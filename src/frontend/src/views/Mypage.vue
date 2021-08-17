@@ -12,16 +12,16 @@
         <body>
             <div class="left-section-mypage">
                 <!--userImage값이 들어왔을경우-->
-                <img v-bind:src="userImage" v-if="userImage != null" class="user-img">
+                <img v-bind:src="userImage" v-if="userImage!=null" class="user-img">
                 <!--userImage값이 null일경우 나타나게 할 디폴트 이미지-->
-                <img src="../assets/img_profile-default.svg" v-if="userImage == null" class="user-img">     
+                <img src="../assets/img_profile-default.svg" v-if="userImage==null||userImage==undefined" class="user-img">     
                 <button type="button" class="input-btn">
                     <input type="file" id="input-file" src="" v-on:change="addUserImg" accept="" style="display:none">
                     <label img="../assets/btn_plus.svg" for="input-file">
                         <img src="../assets/btn_plus.svg" alt="add-image" class="add-img" >
                     </label>
                 </button>
-                <h2>{{userName}}</h2>
+                <h2>{{login.userName}}</h2>
                 <button type="button" class="save-btn" @click="imageUpload">Save</button>
             </div>
             <div class="right-section-mypage">
@@ -93,7 +93,7 @@ export default {
             userImage : null,
             login : {
                 loginState : 0, //0은 로그인이 안 된 상태, 1은 로그인이 된 상태
-                userName : ''
+                userName : 'user'
             },
             userId : '',
             memo : [],
@@ -112,11 +112,16 @@ export default {
         this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
         // this.login.userName = JSON.parse(localStorage.getItem('userName')); 
         console.log("created실행");
-        // console.log(this.userImg);
+        console.log(this.login.userName);
+        
         axios
         .get("http://3.36.131.138/memberInfo")
         .then(res => {
           this.userId = res.data.userId;
+          if(res.data.userName != null || res.data.userName != undefined){
+            this.login.userName = res.data.userName;  
+          }
+            
         })
         .catch(err => {
           console.log(err);
@@ -202,11 +207,10 @@ export default {
             .then(res => {
                 console.log(res);
                 console.log(res.data);
-                if(res.data == null){
-                    this.userImage = "/home/ubuntu/images/53df9f25-6cc3-4a53-8ae7-771d594be0a5_캡처.JPG";
-                }else {
+                if(res.data != null) {
                     this.userImage = "/home/ubuntu/images" + res.data;
-                }   
+                }
+                this.userImage = null;   
             })
             .catch(err => {
                 console.log(err);
@@ -270,15 +274,17 @@ export default {
     border-bottom: #8944FA thin solid;
 }
 .user-img {
-    width:240px; height: 240px;
+    width:230px; height: 230px;
     display: flex;
     margin: auto;
     border-radius: 50%;
+    position: relative;
 }
 
 .add-img {
     width:60px; height:60px;
-    position: relative;
+    position: absolute;
+    top: 3px; right: 1px;
 }
 .input-btn:hover, add-img:hover {
     cursor:pointer;
@@ -320,7 +326,7 @@ export default {
     
 }
 .select-step button {
-    font-size: 21px;
+    font-size: 20px;
     font-weight:normal;
     color: black;
     width: 130px; height: 30px;

@@ -84,29 +84,30 @@ public class MemberController {
     public String getuserFile(HttpServletRequest request){
         HttpSession session = request.getSession();
         if(!(session.isNew())){
-            //String userId = (String)(session.getAttribute("userId"));
-            return memberService.fileFind("id");
+            String userId = (String)(session.getAttribute("userId"));
+            //return memberService.fileFind(userId);
+            return null;
         }else{
-            return memberService.fileFind("id");
-            //return null;
+            //return memberService.fileFind("id");
+            return null;
         }
     }
 
     //파일 업로드
     @PostMapping("/api/userImg")
-    public void updatefileUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception{
+    public boolean updatefileUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception{
         System.out.println("파일업로드 시작");
         HttpSession session = request.getSession();
-        MemberDto memberDto;
         if(!(session.isNew())){
             String userId = (String)(session.getAttribute("userId"));
             String name = (String)(session.getAttribute("name"));
-            //MemberDto memberDto = new MemberDto(userId,name);
-            memberDto = new MemberDto("id","코드윗");
+            MemberDto memberDto = new MemberDto(userId,name);
+            memberService.fileUpload(file, memberDto);
+            return true;
+            //memberDto = new MemberDto("id","코드윗");
         }else{
-            memberDto = new MemberDto("id","코드윗");
-            //return null;
+            //memberDto = new MemberDto("id","코드윗");
+            return false;
         }
-        memberService.fileUpload(file, memberDto);
     }
 }

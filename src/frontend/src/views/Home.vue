@@ -80,10 +80,7 @@ export default {
   data() {
     return {
       selectCourse : '',
-      courseImg : ['../assets/img_cresent-moon-white.svg', '../assets/img_half-moon-white.svg', '../assets/img_full-moon-white.svg'],
-      courseStyle : ['align-self: flex-end' ,'align-self: center','align-self: flex-start'],
       loginPopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
-      // windowTitle : ['HTML', 'CSS', 'JavaScript'],
       coursePopupState : 0, //0은 창 닫힌 상태, 1은 창 열린 상태
       navMenuPopupState : 0, //0은 팝업이 닫힌 상태, 1은 팝업이 열린 상태
       login : {

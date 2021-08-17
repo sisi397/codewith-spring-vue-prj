@@ -26,8 +26,8 @@ public class StageFinishController {
     @GetMapping("/api/stageFinish")
     public List<StageFinish> getStageFinish(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        //String userId = (String)(session.getAttribute("userId"));
-        String userId = "id";
+        String userId = (String)(session.getAttribute("userId"));
+        //String userId = "id";
         return stageFinishRepository.findAllByUserId(userId).get();
     }
 

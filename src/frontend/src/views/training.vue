@@ -143,20 +143,25 @@
           <p v-html="exData[nextBtnCount]" v-if="selectCourseData.course == 3"></p>
         </div>
         <div class="white-bg-btns">
-          <button type="button" class="prev-ex" @click="explainBefore">
-            <img
-              src="../assets/chevron-left-solid.svg"
-              alt="go to the page before"
-            />
-          </button>
-          <button type="button" class="next-ex" @click="explainNext">
-            <img
-              src="../assets/chevron-right-solid.svg"
-              alt="go to the next page"
-            />
-          </button>
-          <button type="button" @click="modale = false" class="skip-btn">
+          <div>
+            <button type="button" class="prev-ex" @click="explainBefore">
+              <img
+                src="../assets/chevron-left-solid.svg"
+                alt="go to the page before"
+              />
+            </button>
+            <button type="button" class="next-ex" @click="explainNext" v-if="this.nextBtnCount != 2">
+              <img
+                src="../assets/chevron-right-solid.svg"
+                alt="go to the next page"
+              />
+            </button>
+          </div>
+          <button type="button" @click="modale = false" v-if="this.nextBtnCount != 2" class="skip-btn">
             설명 Skip
+          </button>
+          <button type="button" @click="explainEnd" v-if="this.nextBtnCount == 2" class="skip-btn">
+            코딩 시작!
           </button>
         </div>
       </div>
@@ -299,6 +304,34 @@ export default {
         
       }
     },
+
+    created() {     //home에서 넘어오면서 사용자 course, stage데이터 넘어오도록
+      this.selectCourseData.course = JSON.parse(localStorage.getItem('courseData')).course;
+      this.selectCourseData.stage = JSON.parse(localStorage.getItem('courseData')).stage;
+      this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
+      console.log("selectCourseData.course:" + this.selectCourseData.course);
+      console.log("selectCourseData.stage:" + this.selectCourseData.stage);
+      console.log("loginState:" + this.login.loginState);
+      //this.login.userName = JSON.parse(localStorage.getItem('userName')); 
+      this.getHtmlCode();
+
+      if (this.login.loginState == 1) { //로그인이 되었다면 유저 정보 요청해 id 알아오기, post시 이용
+        axios
+        .get("http://3.36.131.138/memberInfo") //로컬에서는 현재 실행 안될수도 있음 
+        .then(res => {
+          this.userId = res.data.userId;
+          console.log(res);
+          console.log("userId는:" + this.userId);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        //진행중인 stage 저장, scrap 여부 받아오는것도 로그인 되어있어야 가능 
+        this.onStageIng();
+        this.getScrap();
+      }
+    },
+
     methods: {
       addNewMemo(memo) {
         //localStorage.setItem(this.memo, JSON.stringify(value));
@@ -346,6 +379,7 @@ export default {
         this.modale = true;
 
       },
+
       pageBefore(){ //이전 stage로 돌아가는 버튼
         console.log("pageBefore실행");
         
@@ -425,7 +459,7 @@ export default {
       getScrap(){   //scrap 되어있는지 확인. 페이지 로드 되자마자 실행되어야 함. (아직 서버 반영 안됨!!!)
         console.log("getScrap 함수 실행됨");
         axios
-        .get("http://localhost:8090/api/scrap" + "/ " + this.selectCourseData.course + "/" + this.selectCourseData.stage )
+        .get("http://3.36.131.138/api/scrap" + "/ " + this.selectCourseData.course + "/" + this.selectCourseData.stage )
         .then(res => { //scrap이 되어있는 상태!
           this.bookmarkState = true;
           console.log("getScrap 성공");
@@ -461,8 +495,6 @@ export default {
         console.log("getHtmlCode 함수 실행됨");
         console.log(this.selectCourseData.course);
         console.log(this.selectCourseData.stage);
-
-          //
         //if(this.selectCourseData.course == 1) {  this.selectCourseData.course + "/" + this.selectCourseData.stage
           axios
           .get("http://3.36.131.138/api/" + this.selectCourseData.course + "/" + this.selectCourseData.stage) 
@@ -492,6 +524,14 @@ export default {
           this.nextBtnCount = 0; 
         }
       },
+      explainEnd() { //설명창 마지막장에서 코딩시작 버튼 눌렀을때 실행 
+        this.nextBtnCount++;
+        if(this.nextBtnCount == 3) { 
+          console.log("설명창 종료");
+          this.modale = false;
+          this.nextBtnCount = 0; 
+        }
+      },
       explainBefore() {  //설명창 제목, 본문 뒤로가기 위함
         this.nextBtnCount--;
         if(this.nextBtnCount < 0) {
@@ -506,33 +546,6 @@ export default {
 
     }, //여기까지 method
 
-    // mounted() {
-    // },
-
-    created() {     //home에서 넘어오면서 사용자 course, stage데이터 넘어오도록
-      axios
-        //로그인이 되었다면 유저 정보 요청해 id 알아오기, post시 이용 
-        .get("http://3.36.131.138/memberInfo") //로컬에서는 현재 실행 안될수도 있음 
-        .then(res => {
-          this.userId = res.data.userId;
-          console.log(res);
-          console.log("userId는:" + this.userId);
-        })
-        .catch(err => {
-          console.log(err);
-        }),
-      this.selectCourseData.course = this._course;
-      this.selectCourseData.stage = this._stage;
-      this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
-      // this.login.userName = JSON.parse(localStorage.getItem('userName'));  
-      console.log("loginState:" + this.login.loginState);
-      this.getHtmlCode();
-      this.onStageIng();
-      this.getScrap();
-    }
-    
-    
-  
 };
 
 </script>
@@ -546,12 +559,28 @@ export default {
   #8faccc 회하늘색(버튼색)
 */
 
-@import url(https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css);
+:root {
+    --color_main-purple: #8944FA;
+    --color_light-purple: #8944FA;
+    --color_dark-purple: #4C1993;
+    --color_navy: #30355C;
+    --color_point-mint: #00D1FF;
+    --color_white: #FFFFFF;
+    --color_black: #000000;
+    --color_light-gray: #F5F5F5;
+    --color_gray: #D2D2D2;
+    --color_dark-gray: #898A8D;
+}
+
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+.nanumsquare {
+    font-family: 'NanumSquare', sans-serif !important;
+}
 
 * {
   box-sizing: border-box;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  font-family: "SpoqaHanSans";
+  font-family: 'NanumSquare', sans-serif !important;
 }
 
 #training {
@@ -688,28 +717,33 @@ form {
   align-items: center;
   position: relative;
   margin: 8% 27% auto auto;
-  width: 900px;
-  height: 618px;
+  width: 51%;
+  height: 62%;
   background: linear-gradient(
     0deg,
-    rgba(255, 255, 255, 0.42826086956521736) 0%,
-    rgba(255, 255, 255, 0.8152173913043479) 52%,
-    rgba(255, 255, 255, 0.9391304347826087) 79%
+    /* rgba(180, 181, 208, 0.65) 0%,
+    rgba(204, 204, 216, 0.91) 20%, */
+    rgb(179 189 212 / 65%) 0%,
+    rgb(204 213 216 / 98%) 20%,
+    rgb(255, 255, 255) 79%
   );
   border-radius: 20px;
   padding: 20px;
 }
+/* width: 900px;
+  height: 618px; */
 .white-bg-training h1 {
   margin: 0;
-  position: relative;
+  margin-right: 30px;
+  /* position: relative; */
   font-weight: normal;
-  font-size: 29px;
+  font-size: 25px;
 }
 
-.white-bg-training h1::after {
+.white-bg-training::before {
   content: "";
   display: block;
-  width: 900px;
+  width: 100%;
   height: 1.5px;
   background: radial-gradient(
     circle,
@@ -717,22 +751,22 @@ form {
     rgba(85, 128, 226, 0.86) 62%,
     rgba(0, 212, 255, 0.35) 97%
   );
-  /* position: relative;
-  right: 90px; */
+  position: absolute;
+  top: 10%;
 }
 .white-bg-training > img {
   width: 120px;
   height: 100px;
   position: absolute;
-  right: 48px;
-  top: 6px;
+  right: 2%;
+  top: 2%;
 }
-.white-bg-p{
+.white-bg-p{ /*p를 감싸는 영역*/ 
   display: flex;
   flex-direction: column;
   align-content: center;
-  width: 693px;
-  height: 430px;
+  width: 90%;
+  height: 70%;
   margin: auto auto;
   overflow-y: scroll;
 }
@@ -751,14 +785,14 @@ form {
   height: 60px;
 }
 .white-bg-btns {
-  height: 66px; width:auto;
+  height: 81px; width:58%;
   background: none;
   border: none;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  margin-left: 70px;
+  margin-left: 38%;
 }
 .white-bg-btns img:hover {
   transform: scale(1.15);
@@ -766,15 +800,13 @@ form {
 }
 
 .skip-btn {
-  width: 70px;
+  width: auto; height: auto;
   padding: 0;
-  font-size: 17px;
-  color: #3b3485;
+  font-size: 17px; font-weight: bolder;
+  color: #431AD7;
   background: none;
   border-radius: 5px;
-  position: relative;
-  left: 250px;
-  bottom: -20px;
+  margin-top: 10%;
 }
 
 /*설명,정답버튼, 밑에있는 버튼 등 middle section  */
@@ -796,12 +828,12 @@ form {
 } */
 
 .answer {
-  width: 550px;
-  height: 710px;
+  width: 32%;
+  height: 74%;
   background: #f4f5f6;
   border-radius: 8px;
   position:fixed;
-  top: 121px; right: 610px;
+  top: 13%; right: 31%;
   border: #d4d2db thin solid;
   border-radius: 20px;
   overflow-y: scroll;
@@ -894,7 +926,7 @@ footer img:hover {
 .right-section nav h3 {
   display: flex;
   font-size: 17px;
-  color: #d4d2db;
+  color: #FFFFFF;
   font-weight:bolder;
 }
 .log-btn {
@@ -907,7 +939,7 @@ footer img:hover {
   background: none;
   border: none;
   font-size: 16px;
-  color:#d4d2db;
+  color:#ffffff;
 }
 .sign-up-btn::after {
   content: "";
@@ -925,7 +957,7 @@ footer img:hover {
   margin: 0;
   margin-right: 15px;
   font-size: 16px;
-  color:#d4d2db;
+  color:#ffffff;
 }
 .log-btn .login-btn::after {
   content: "";
@@ -934,21 +966,21 @@ footer img:hover {
   margin-right: auto; margin-left: auto;
   width: 4px; height: 4px;
   border-radius: 50%;
-  background:#d4d2db;
+  background:rgb(112 207 255);
 }
 .mypage-btn {
-  color: #d4d2db;
+  color: #ffffff;
   font-weight:bolder;
   border: none;
   background: none;
-  font-size: 16px;
+  font-size: 18px;
 }
 .mypage-btn::after {
   content: "";
   float: right;
   width: 1.5px;
   height: 22px;
-  background: rgb(116, 116, 116);
+  background: rgb(112 207 255);
   margin-left: 14px;
 }
 
@@ -973,8 +1005,8 @@ footer img:hover {
   position: absolute;
   top: 100px; right: 18px;
   flex-direction: column;
-  width: 550px;
-  height: 700px;
+  width: 29%;
+  height: 74%;
   background: white;
   border-radius: 20px; border: #d4d2db thin solid;
   z-index: 2;
@@ -985,7 +1017,8 @@ footer img:hover {
 }
 .x-btn {
   width: 30px; height: 30px;
-  margin-left: 510px;
+  position: relative;
+  right:-10px; top: 4px;
   margin-top: 7px;
   background: none;
   border: none;
