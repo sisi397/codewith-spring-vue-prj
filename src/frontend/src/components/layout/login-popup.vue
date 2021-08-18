@@ -243,7 +243,6 @@ export default {
   align-items: center; 
   width: 100%; height: 100%;
   position: fixed;
-  margin: -20px;
   z-index: 1;
 }
 #login-popup form{
@@ -251,7 +250,8 @@ export default {
 }
 #login-popup .black-bg {
   position: fixed;
-  width: 100%; height: 100%;
+  width: 110%; height: 110%;
+  right: -1%;
   background: rgba(0, 0, 0, 0.5);
 }
 #login-popup .login-popup-content {

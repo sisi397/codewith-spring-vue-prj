@@ -133,7 +133,7 @@ export default {
 }
 .black-bg {
   position: fixed;
-  width: 100%; height: 100%;
+  width: 110%; height: 110%;
   background: rgba(0, 0, 0, 0.5);
 }
 #course-popup .course-popup-content {

@@ -110,7 +110,7 @@ export default {
     },
     created() { //로그인이 된 상태 가정, db에 회원정보 넘어간 상태 
         this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
-        // this.login.userName = JSON.parse(localStorage.getItem('userName')); 
+        this.login.userName = localStorage.getItem('userName');    
         console.log("created실행");
         console.log(this.login.userName);
         
@@ -118,10 +118,6 @@ export default {
         .get("http://3.36.131.138/memberInfo")
         .then(res => {
           this.userId = res.data.userId;
-          if(res.data.userName != null || res.data.userName != undefined){
-            this.login.userName = res.data.userName;  
-          }
-            
         })
         .catch(err => {
           console.log(err);
@@ -153,7 +149,6 @@ export default {
         .catch(err => {
           console.log(err);
         })
-        
         this.userImg(); //이미지 받아오기 실행
     },
     methods : {

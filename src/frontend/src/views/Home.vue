@@ -70,7 +70,7 @@ import CoursePopup from '../components/layout/course-popup.vue'
 export default {
   name: 'App',
   components: {
-    Header, Background, LoginPopup,CoursePopup
+    Header, Background, LoginPopup, CoursePopup
   },
   created() {
     this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
@@ -129,7 +129,7 @@ export default {
     width: 100%;
     height: 100%;
     background-image: url("../assets/background-main.png");
-    background-size: cover;
+    background-size:cover;
     background-repeat: no-repeat;
     padding: 20px;
     padding-bottom: 40px;
