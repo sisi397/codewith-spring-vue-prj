@@ -1,9 +1,13 @@
 package com.codewith.codewith.service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.String;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.codewith.codewith.dto.FileDto;
 import com.codewith.codewith.model.Role;
 import com.codewith.codewith.model.Member;
-import com.codewith.codewith.model.Scrap;
 import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.dto.MemberDto;
@@ -18,11 +22,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.FileDataSource;
@@ -210,20 +214,24 @@ public class MemberService implements UserDetailsService {
             return null;
         }
     }
-
+//
+    private S3Uploader s3Uploader;
+    private final AmazonS3Client amazonS3Client;
+    //private String bucket="codewithbucket";
     //파일 업로드
     public void fileUpload(MultipartFile file, MemberDto memberDto) throws Exception{
         System.out.println("파일업로드 시작");
         FileDto dto = new FileDto(UUID.randomUUID().toString(), file.getOriginalFilename(), file.getContentType());
-        File newFileName = new File(dto.getUuid() + "_" + dto.getFileName());
+        String newFileName = "img/" + dto.getUuid() + "_" + dto.getFileName();
 
         Optional<Member> userEntityWrapper = memberRepository.findByUserId(memberDto.getUserId());
         if(userEntityWrapper.isPresent()) {
+            String fileUrl = s3Uploader.upload(file, newFileName);
+            System.out.println(fileUrl);
             Member userEntity = userEntityWrapper.get();
-            userEntity.updateFile(dto.getUuid() + "_" + dto.getFileName());
+            userEntity.updateFile(fileUrl);
             memberRepository.save(userEntity);
         }
-
-        file.transferTo(newFileName);
+        //file.transferTo(newFileName);
     }
 }

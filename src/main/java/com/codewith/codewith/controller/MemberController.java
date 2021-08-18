@@ -85,8 +85,8 @@ public class MemberController {
         HttpSession session = request.getSession();
         if(!(session.isNew())){
             String userId = (String)(session.getAttribute("userId"));
-            //return memberService.fileFind(userId);
-            return null;
+            return memberService.fileFind(userId);
+            //return null;
         }else{
             //return memberService.fileFind("id");
             return null;

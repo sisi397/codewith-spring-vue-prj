@@ -203,9 +203,10 @@ export default {
                 console.log(res);
                 console.log(res.data);
                 if(res.data != null) {
-                    this.userImage = "/home/ubuntu/images" + res.data;
+                    this.userImage = res.data;
+                }else{
+                  this.userImage = null;
                 }
-                this.userImage = null;   
             })
             .catch(err => {
                 console.log(err);
