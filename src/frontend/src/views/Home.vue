@@ -73,9 +73,7 @@ export default {
     Header, Background, LoginPopup, CoursePopup
   },
   created() {
-    this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
-    this.login.userName = localStorage.getItem('userName');
-    
+    this.getDataFromLocal();
   },
   data() {
     return {
@@ -90,6 +88,10 @@ export default {
     }
   },
   methods : {
+    getDataFromLocal() {
+      this.login.loginState = JSON.parse(localStorage.getItem('loginState'));
+      this.login.userName = localStorage.getItem('userName');
+    },
     loginOpen() {
       this.loginPopupState = 1;
     },
@@ -104,7 +106,7 @@ export default {
       this.coursePopupState = 0;
     },
     changeLoginState() {
-      this.$router.go(); //변경된 loginState의 값으로 세팅하기 위해 새로 고침
+      this.getDataFromLocal(); //변경된 loginState의 값으로 세팅하기 위해 새로 고침
     }
   }
 }

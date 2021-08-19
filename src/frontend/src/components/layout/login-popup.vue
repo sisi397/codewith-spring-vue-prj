@@ -313,6 +313,7 @@ export default {
   width: 100%; height: 35px;
   border: 1px solid #C4C4C4;
   border-radius: 10px;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 #login-popup .login-form .login-guide {
   display: block;

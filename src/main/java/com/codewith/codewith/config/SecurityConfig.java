@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = "*")
@@ -44,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/myinfo").hasRole("MEMBER")
                 .antMatchers("localhost:8090").permitAll()
                 .antMatchers("/**").permitAll() //나머지는 전부 접근 가능
-            .and() // 로그인 설정
+                .and() // 로그인 설정
                 .formLogin()
                 //.loginPage("http://localhost:8080/login") //로그인 페이지
                 .usernameParameter("userId")
@@ -53,15 +52,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/loginPage") // 로그인 성공 시 이동할 페이지
                 .failureUrl("/loginfail")
                 .permitAll()
-            .and() // 로그아웃 설정
+                .and() // 로그아웃 설정
                 .logout()
 //                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
 //                .logoutSuccessUrl("/user/logout/result")
                 .invalidateHttpSession(true)
-            .and()
+                .and()
                 // 403 예외처리 핸들링
                 .exceptionHandling().accessDeniedPage("/user/denied")
-            .and()
+                .and()
                 .headers().frameOptions().disable();
 
     }

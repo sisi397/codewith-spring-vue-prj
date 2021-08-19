@@ -1,7 +1,6 @@
 package com.codewith.codewith.controller;
 
 import com.codewith.codewith.model.Scrap;
-import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.ScrapRepository;
 import com.codewith.codewith.dto.ScrapRequestDto;
 import com.codewith.codewith.service.ScrapService;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.security.Principal;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -21,8 +19,6 @@ public class ScrapController {
 
     private final ScrapRepository scrapRepository;
     private final ScrapService scrapService;
-    @Resource
-    private UserInfo userInfo;
 
     @GetMapping("/api/scrap")
     public List<Scrap> getScrap(HttpServletRequest request) {

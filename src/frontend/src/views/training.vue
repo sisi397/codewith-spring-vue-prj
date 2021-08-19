@@ -72,7 +72,7 @@
     </section>
     <section class="right-section">
       <nav>
-        <div class="log-btn">
+        <div class="right-header-btn">
           <!--로그인 하지 않았을 경우 보임-->
           <button type="button" class="login-btn" v-if="login.loginState == 0" @click="loginOpen">
             Login
@@ -80,11 +80,10 @@
           <router-link type="button" class="sign-up-btn" v-if="login.loginState == 0" :to="{ name: 'Signup' }" @click="$router.push({name: 'Signup'})">
             Sign-Up
           </router-link>
-        </div>
-        <div><!--로그인 했을 경우 보임-->
-          <button type="button">
-            <router-link class="mypage-btn" v-if="login.loginState == 1" :to="{ name: 'Mypage' }" @click="$router.push({name: 'Mypage'})">Mypage</router-link>
-          </button>
+          <!--로그인 했을 경우 보임-->
+          <router-link class="mypage-btn" v-if="login.loginState == 1" :to="{ name: 'Mypage' }" @click="$router.push({name: 'Mypage'})">
+            Mypage
+          </router-link>
         </div>
         <h3>{{ courseName[selectCourseData.course-1] }} Step.{{ stepName[selectCourseData.stage-1] }}</h3>
       </nav>
@@ -143,7 +142,7 @@
           <p v-html="exData[nextBtnCount]" v-if="selectCourseData.course == 3"></p>
         </div>
         <div class="white-bg-btns">
-          <div>
+          <div class="white-bg-shift-btn">
             <button type="button" class="prev-ex" @click="explainBefore">
               <img
                 src="../assets/chevron-left-solid.svg"
@@ -232,7 +231,7 @@ export default {
         userId: "",
 
         stepNum: ["1", "2", "3"],
-        courseName: ["HTML", "CSS", "Javascript"],
+        courseName: ["HTML", "CSS", "JS"],
         stepName: ["1 튜토리얼", "2 달력 만들기", "3 회원가입 창"],
 
         //완성 이미지
@@ -327,6 +326,7 @@ export default {
         .catch(err => {
           console.log(err);
         })
+         
       }
     },
 
@@ -377,6 +377,9 @@ export default {
           this.modale = false;
           this.selectCourseData.stage = 3; //그대로 머물러 있게 하기 위함 
         }
+        this.onStageIng();
+        this.bookmarkState = false;
+        this.getScrap();
         this.getHtmlCode();
       },
 
@@ -395,6 +398,9 @@ export default {
           this.selectCourseData.stage = 1; //그대로 머물러 있게 하기 위함 
 
         }
+        this.onStageIng();
+        this.bookmarkState = false;
+        this.getScrap();
         this.getHtmlCode();
         this.modale = true; 
       },
@@ -564,8 +570,6 @@ export default {
     --color_dark-gray: #898A8D;
 }
 
-@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
-
 .nanumsquare {
     font-family: 'NanumSquare', sans-serif !important;
 }
@@ -574,6 +578,7 @@ export default {
   box-sizing: border-box;
   font-family: 'NanumSquare', sans-serif !important;
 }
+
 
 #training {
   margin: 0;
@@ -708,16 +713,16 @@ form {
   0deg
   ,rgb(255 255 255 / 90%) 0%, rgb(255 255 255 / 97%) 32%, rgba(255,255,255,1) 95%);
   border-radius: 20px;
-  padding: 20px;
+  padding: 10px 20px;
 }
 /* width: 900px;
   height: 618px; */
 .white-bg-training h1 {
   margin: 0;
-  margin-right: 30px;
+  margin: auto auto;
   /* position: relative; */
   font-weight: normal;
-  font-size: 25px;
+  font-size: 23px;
 }
 
 .white-bg-training::before {
@@ -733,10 +738,11 @@ form {
   );
   position: absolute;
   top: 10%;
+  margin-top: 7px;
 }
 .white-bg-training > img {
-  width: 120px;
-  height: 100px;
+  width: 15%;
+  height: 15%;
   position: absolute;
   right: 2%;
   top: 2%;
@@ -764,19 +770,16 @@ form {
   width: 80px;
   height: 60px;
 }
-.white-bg-btns {
-  height: 81px; width:58%;
-  background: none;
-  border: none;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-left: 38%;
-}
+
 .white-bg-btns img:hover {
   transform: scale(1.15);
   transition: 0.3s;
+}
+
+.white-bg-shift-btn{
+  width:auto;
+  margin: auto auto;
+  position: relative;
 }
 
 .skip-btn {
@@ -785,8 +788,9 @@ form {
   font-size: 17px; font-weight: bolder;
   color: #431AD7;
   background: none;
-  border-radius: 5px;
-  margin-top: 10%;
+  position: absolute;
+  right: 6%;
+  top: 90%;
 }
 
 /*설명,정답버튼, 밑에있는 버튼 등 middle section  */
@@ -895,11 +899,14 @@ footer img:hover {
 /*right-section 관련 부분들*/
 .right-section nav {
   display: flex;
-  width: 100%; height: 5%;
-  margin-bottom: 6%;
+  width: 108%; height: 3%;
+  margin: 0;
+  margin-bottom: 4%;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
+  justify-content:center;
+  padding-left: 7px;
 }
 
 .right-section {
@@ -907,7 +914,7 @@ footer img:hover {
   flex-direction: column;
   align-items: flex-end;
   width: 25%;
-  padding: 10px 2% 5% 2%;
+  padding: 22px 2%;
 }
 
 .right-section nav h3 {
@@ -915,60 +922,45 @@ footer img:hover {
   font-size: 16px;
   color: #FFFFFF;
   font-weight:bolder;
+  margin-left: 12px;
 }
-.log-btn {
-  /*login,sign-up 버튼 감싸는div
-  margin: 20px 20px;*/
+/* .right-header-btn {
   background: none;
-}
+  display: flex;
+  flex-direction: row;
+  width: 
+} */
 .sign-up-btn {
-  margin-left: 5px;
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight:bold;
   color:#ffffff;
+  padding-right: 12px;
+  border-right: 1px solid #8cfaff;
 }
-.sign-up-btn::after {
-  content: "";
-  float: right;
-  margin-left: 15px;
-  width: 1px;
-  height: 22px;
-  background:rgb(112 207 255);
-  
-}
-.log-btn .login-btn {
+
+.right-header-btn .login-btn {
   position: relative;
   background: none;
   border: none;
   margin: 0;
-  margin-right: 15px;
-  font-size: 16px;
+  margin-right: 8px;
+  font-size: 15px;
+  font-weight:bold;
   color:#ffffff;
 }
-.log-btn .login-btn::after {
-  content: "";
-  position: absolute;
-  top: 8px; left: 52px;
-  margin-right: auto; margin-left: auto;
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background:rgb(112 207 255);
-}
+
 .mypage-btn {
   color: #ffffff;
-  font-weight:bolder;
-  border: none;
+  font-weight:bold;
   background: none;
-  font-size: 18px;
-}
-.mypage-btn::after {
-  content: "";
-  float: right;
-  width: 1.5px;
-  height: 22px;
-  background: rgb(112 207 255);
-  margin-left: 14px;
+  font-size: 17px;
+  position: relative;
+  padding-right: 12px;
+  border-right: 1px solid #8cfaff;
+  
+
 }
 
 .goal {
@@ -978,7 +970,6 @@ footer img:hover {
 }
 .goal-btn {
   padding: 0;
-  
   width: 150px;
   height: 32px;
   border: none;
@@ -986,6 +977,7 @@ footer img:hover {
   font-size: 16px;
   background-color: white;
   color: rgb(59, 59, 59);
+  margin: 20px 10px;
 }
 .completeResult {
   display: flex;
@@ -1017,10 +1009,10 @@ footer img:hover {
   position: relative;
   flex-direction: column;
   align-items: center;
-  margin: 100px auto;
-  width: 100%; height: 100%;
+  margin: 10% auto;
+  width: 100%; height: 60%;
   background-color: aliceblue;
-  overflow-y: hidden;
+  overflow: hidden;
   box-shadow: 5px 5px 5px 4px #5133c3;
 
 }
@@ -1057,6 +1049,7 @@ footer img:hover {
   margin-top: 10px;
   background: none;
   list-style: none;
+  position: relative;
 }
 
 .delete-memo {
@@ -1066,8 +1059,11 @@ footer img:hover {
   left: 7%;
 }
 .trash-img {
-  width: 15%; height: 15%;
-  margin-left: 156%;
+  top: 95%;
+  width: 7%;
+  height: 7%;
+  position: absolute;
+  left: 84%;
 }
 
 /*모든 버튼/router 링크에 적용되는 속성 */

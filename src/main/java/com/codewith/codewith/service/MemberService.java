@@ -1,18 +1,13 @@
 package com.codewith.codewith.service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.String;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.codewith.codewith.dto.FileDto;
 import com.codewith.codewith.model.Role;
 import com.codewith.codewith.model.Member;
-import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.dto.MemberDto;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,18 +29,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.util.*;
-import java.lang.String;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @Service
 @AllArgsConstructor
 public class MemberService implements UserDetailsService {
     private MemberRepository memberRepository;
-
-    @Resource
-    private UserInfo userInfo;
 
     //회원가입
     @Transactional
@@ -147,9 +136,6 @@ public class MemberService implements UserDetailsService {
 
     private final JavaMailSender javaMailSender;
 
-    //오류나서 from안쓰고 직접 이메일 적음.
-//    @Value("${spring.mail.username}")
-//    private String from;
 
     //비밀번호 찾기. id랑 이메일을 입력했을 때.
     public boolean passFind(MemberDto memberDto) throws MessagingException {
@@ -216,8 +202,7 @@ public class MemberService implements UserDetailsService {
     }
 //
     private S3Uploader s3Uploader;
-    private final AmazonS3Client amazonS3Client;
-    //private String bucket="codewithbucket";
+
     //파일 업로드
     public void fileUpload(MultipartFile file, MemberDto memberDto) throws Exception{
         System.out.println("파일업로드 시작");
@@ -232,6 +217,5 @@ public class MemberService implements UserDetailsService {
             userEntity.updateFile(fileUrl);
             memberRepository.save(userEntity);
         }
-        //file.transferTo(newFileName);
     }
 }

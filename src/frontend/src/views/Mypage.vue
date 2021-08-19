@@ -12,7 +12,7 @@
         <body>
             <div class="left-section-mypage">
                 <!--userImage값이 들어왔을경우-->
-                <img v-bind:src="userImage" v-if="userImage!=null" class="user-img">
+                <img v-bind:src="userImage" v-if="userImage!=null||userImage!=undefined" class="user-img">
                 <!--userImage값이 null일경우 나타나게 할 디폴트 이미지-->
                 <img src="../assets/img_profile-default.svg" v-if="userImage==null||userImage==undefined" class="user-img">     
                 <button type="button" class="input-btn">
@@ -202,15 +202,14 @@ export default {
             .then(res => {
                 console.log(res);
                 console.log(res.data);
-                if(res.data != null) {
+                if(res.data != null || res.data != undefined) {
                     this.userImage = res.data;
-                }else{
-                  this.userImage = null;
-                }
+                } 
             })
             .catch(err => {
                 console.log(err);
             })
+            
         }
     } //methods 끝
 
@@ -257,8 +256,8 @@ export default {
     align-content: center;
     align-content: center;
     justify-content: center;
-    width: 400px; height: auto;
-    margin-top: 160px;
+    width: 400px; height: 78%;
+    margin-top: 7%;
 }
 .left-section-mypage h2 {
     width: 240px;
@@ -280,7 +279,7 @@ export default {
 .add-img {
     width:60px; height:60px;
     position: absolute;
-    top: 3px; right: 1px;
+    top: -2px; right: 2px;
 }
 .input-btn:hover, add-img:hover {
     cursor:pointer;

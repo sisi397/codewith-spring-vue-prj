@@ -1,7 +1,6 @@
 package com.codewith.codewith.controller;
 
 import com.codewith.codewith.model.StageIng;
-import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.StageIngRepository;
 import com.codewith.codewith.dto.StageIngRequestDto;
 import com.codewith.codewith.service.StageIngService;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -21,8 +19,6 @@ public class StageIngController {
 
     private final StageIngRepository stageIngRepository;
     private final StageIngService stageIngService;
-    @Resource
-    private UserInfo userInfo;
 
     @GetMapping("/api/stageIng/{course}")
     public StageIng getStageIng(@PathVariable int course, HttpServletRequest request) {
@@ -40,12 +36,6 @@ public class StageIngController {
         //String userId = "id";
         return stageIngRepository.findAllByUserId(userId).get();
     }
-//    @GetMapping("/api/stageIng")
-//    public List<StageIng> getStageIng(Principal principal) {
-//        String userId = principal.getName();
-//        return stageIngRepository.findAllByUserId(userId).orElseThrow(
-//                () -> new IllegalArgumentException("userId가 존재하지 않습니다."));
-//    }
 
 
     //POST (INSERT)

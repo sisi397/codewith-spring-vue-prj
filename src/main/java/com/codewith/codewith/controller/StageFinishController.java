@@ -1,6 +1,5 @@
 package com.codewith.codewith.controller;
 import com.codewith.codewith.model.StageFinish;
-import com.codewith.codewith.model.UserInfo;
 import com.codewith.codewith.repository.StageFinishRepository;
 import com.codewith.codewith.dto.StageFinishRequestDto;
 import com.codewith.codewith.service.StageFinishService;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.security.Principal;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -20,8 +18,6 @@ public class StageFinishController {
 
     private final StageFinishRepository stageFinishRepository;
     private final StageFinishService stageFinishService;
-    @Resource
-    private UserInfo userInfo;
 
     @GetMapping("/api/stageFinish")
     public List<StageFinish> getStageFinish(HttpServletRequest request) {
