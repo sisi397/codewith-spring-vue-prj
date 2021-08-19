@@ -1,10 +1,10 @@
 package com.codewith.codewith.service;
 
 import java.lang.String;
-import com.amazonaws.services.s3.AmazonS3Client;
+
 import com.codewith.codewith.dto.FileDto;
-import com.codewith.codewith.model.Role;
 import com.codewith.codewith.model.Member;
+import com.codewith.codewith.model.Role;
 import com.codewith.codewith.repository.MemberRepository;
 import com.codewith.codewith.dto.MemberDto;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.FileDataSource;
-import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -55,24 +54,6 @@ public class MemberService implements UserDetailsService {
         return memberRepository.save(memberDto.toEntity());
     }
 
-    @Override
-    public UserDetails loadUserByUsername(@RequestBody String username) throws UsernameNotFoundException {
-        System.out.println(username);
-        System.out.println("/login 이 호출 되면 자동 실행되어 username이 DB에 있는지 확인한다.");
-        Optional<Member> userEntityWrapper = memberRepository.findByUserId(username);
-        System.out.println(userEntityWrapper);
-        Member userEntity = userEntityWrapper.get();
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
-        System.out.println(userEntity.getPassword() + " " + userEntity.getUserId() + " " + authorities);
-        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
-
-        if(pwdEncoder.matches("pass", userEntity.getPassword()))
-            System.out.println("good");
-        return new User(userEntity.getUserId(), userEntity.getPassword(), authorities);
-
-    }
-
     //로그인
     public boolean login(MemberDto member, HttpServletRequest request) throws UsernameNotFoundException {
         System.out.println("login시작");
@@ -91,8 +72,6 @@ public class MemberService implements UserDetailsService {
                     session.setAttribute("userId", userEntity.getUserId());
                     session.setAttribute("name", userEntity.getName());
                     System.out.println(session.getAttribute("userId"));
-                    //userInfo.setUserId(userEntity.getUserId());
-                    //userInfo.setName(userEntity.getName());
                     return true;
                 }
             } else {
@@ -100,6 +79,22 @@ public class MemberService implements UserDetailsService {
             }
         }
         return false;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(@RequestBody String username) throws UsernameNotFoundException {
+        Optional<Member> userEntityWrapper = memberRepository.findByUserId(username);
+        System.out.println(userEntityWrapper);
+        Member userEntity = userEntityWrapper.get();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
+        System.out.println(userEntity.getPassword() + " " + userEntity.getUserId() + " " + authorities);
+        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
+
+        if(pwdEncoder.matches("pass", userEntity.getPassword()))
+            System.out.println("good");
+        return new User(userEntity.getUserId(), userEntity.getPassword(), authorities);
+
     }
 
     //비밀번호 랜덤 생성
